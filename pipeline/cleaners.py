@@ -129,6 +129,10 @@ def resolve_vendor_id(
     normalized = vendor_name_raw.strip().title()
     master = {v.vendor_name.strip().title(): v.vendor_id for v in vendors}
 
+    # cutoff=0.7 was chosen empirically on this dataset and kept as a good fit.
+    # Too low → false positives (wrong vendor matched silently).
+    # Too high → false negatives (valid names rejected, more rows quarantined).
+    # In production, validate against a labelled sample before changing this value.
     matches = get_close_matches(normalized, master.keys(), n=1, cutoff=0.7)
     if not matches:
         return None, None
