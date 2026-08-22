@@ -76,6 +76,8 @@ def _clean_row(
         quarantine_reason = quarantine_reason or f"Unparseable amount '{raw.amount}': {exc}"
         amount = 0.0
 
+    is_credit_note = amount < 0
+
     # Currency
     currency, entry = normalize_currency(raw.currency, row_id, raw.invoice_number)
     if entry:
@@ -125,6 +127,7 @@ def _clean_row(
         cost_center=raw.cost_center.strip(),
         po_number=raw.po_number.strip() or None,
         approved_by=raw.approved_by.strip() or None,
+        is_credit_note=is_credit_note,
         quarantined=bool(quarantine_reason),
         quarantine_reason=quarantine_reason,
     )

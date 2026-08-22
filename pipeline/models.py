@@ -52,6 +52,7 @@ class CleanInvoice(BaseModel):
     cost_center: str
     po_number: Optional[str]
     approved_by: Optional[str]
+    is_credit_note: bool
     quarantined: bool = False
     quarantine_reason: Optional[str] = None
 
