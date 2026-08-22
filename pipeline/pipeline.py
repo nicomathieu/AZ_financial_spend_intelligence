@@ -261,10 +261,16 @@ def run_pipeline(
             flags.extend(rule.check(invoice, vendor_map, approver_roles, clean_invoices, reference_date))
 
     with duckdb.connect(db_path) as conn:
-        _write_to_db(
-            conn, clean_invoices, vendors, audit_entries, flags,
-            run_id, run_timestamp, reference_date, invoices_path,
-        )
+        conn.begin()
+        try:
+            _write_to_db(
+                conn, clean_invoices, vendors, audit_entries, flags,
+                run_id, run_timestamp, reference_date, invoices_path,
+            )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
     return PipelineResult(
         total_rows=len(clean_invoices),
