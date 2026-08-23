@@ -1,5 +1,5 @@
 from __future__ import annotations
-import anthropic
+import litellm
 
 SQL_SYSTEM_PROMPT = """You generate safe, read-only SQL queries for a DuckDB database.
 
@@ -56,16 +56,18 @@ def _is_safe_select(sql: str) -> bool:
     return tokens.isdisjoint(_DANGEROUS)
 
 
-def generate_sql(question: str, client: anthropic.Anthropic) -> str | None:
-    """Ask Claude for a SELECT query. Returns None on failure or unsafe output."""
+def generate_sql(question: str) -> str | None:
+    """Ask the LLM for a SELECT query. Returns None on failure or unsafe output."""
     try:
-        response = client.messages.create(
-            model="claude-opus-5",
+        response = litellm.completion(
+            model="openai/bedrock-claude-4-5-sonnet-ari-prod",
+            messages=[
+                {"role": "system", "content": SQL_SYSTEM_PROMPT},
+                {"role": "user", "content": question},
+            ],
             max_tokens=1024,
-            system=SQL_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": question}],
         )
-        raw = response.content[0].text.strip()
+        raw = (response.choices[0].message.content or "").strip()
 
         # Strip markdown code fences if the model wrapped the query
         if raw.startswith("```"):

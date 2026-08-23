@@ -1,6 +1,14 @@
 from __future__ import annotations
 import logging
+import os
 import numpy as np
+
+# Default to cache-only mode so huggingface_hub never retries on startup.
+# Without this, a missing model triggers 5 retries × ~10 files = ~60s of SSL spam.
+# To download all-MiniLM-L6-v2 on first run:
+#   HF_HUB_OFFLINE=0 uv run uvicorn backend.main:app
+# After the model is cached it loads instantly regardless of this setting.
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
 
 logger = logging.getLogger(__name__)
 
