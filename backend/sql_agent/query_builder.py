@@ -29,6 +29,8 @@ Rules:
 - Filter out quarantined rows unless the question explicitly asks about quarantined: WHERE quarantined = false
 - Always LIMIT 100 unless the question asks for totals or aggregations
 - Use amount in EUR where possible; note currency when mixing
+
+IMPORTANT: invoices_enriched already contains vendor_status, vendor_country, vendor_category from the vendor master via a pre-built LEFT JOIN. Never join invoices_enriched to vendors manually — it creates ambiguous column references. Always use invoices_enriched.vendor_status directly.
 """
 
 _DANGEROUS = frozenset(
