@@ -100,6 +100,10 @@ Do not query pipeline_log, audit_log, or invoices_clean directly.
 
 The prompt guard is the first line — it handles the 99% case cleanly. The code and DB guards are independent backstops that require no trust in the LLM output.
 
+**Known limitation: `invoice_date` stored as VARCHAR**
+
+`invoice_date` is stored as a `VARCHAR` in the current pipeline. The SQL agent occasionally generates `EXTRACT(YEAR FROM invoice_date)` which fails at runtime on a string column. Mitigation: the SQL system prompt explicitly instructs the LLM to use `invoice_date LIKE '2025%'` or `CAST(invoice_date AS DATE)` instead. Production fix: store as `DATE` type by casting in `_write_to_db` during pipeline ingestion — one line: `inv_df["invoice_date"] = pd.to_datetime(inv_df["invoice_date"]).dt.date`.
+
 ---
 
 ### What I deliberately did NOT build
