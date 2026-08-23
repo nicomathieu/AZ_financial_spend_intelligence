@@ -41,6 +41,8 @@ cd frontend && npm install && npm start
 | **difflib cosine vs vector DB** | The policy document produces ≤15 chunks. NumPy cosine similarity is sufficient and introduces zero external infrastructure. A vector DB (Pinecone, ChromaDB) would be the right call at 10,000+ chunks. |
 | **uv** | Reproducible lockfile (`uv.lock`), fast installs, Python version pinning — correct default for a prototype that will be handed over. |
 | **Single repo** | Appropriate for a prototype. In production: two repos with independent CI/CD pipelines and versioned API contracts between backend and frontend. |
+| **TF-IDF fallback for embeddings** | `sentence-transformers` is blocked by AstraZeneca's Zscaler proxy at startup (SSL intercept prevents HuggingFace download). The embedder falls back to scikit-learn TF-IDF fitted on the policy corpus — sufficient for 9 chunks. In production: Azure OpenAI `text-embedding-3-small` via the ARI gateway for data residency compliance. |
+| **LiteLLM via AZ gateway** | All LLM calls route through the ARI LiteLLM proxy (`LITELLM_HOST`). Invoice data never leaves AstraZeneca infrastructure — required for GDPR and AZ data residency policy. Model and host are read from `.env` at call time; no credentials or URLs hardcoded in the repo. |
 
 ### Pipeline design
 
@@ -52,9 +54,9 @@ cd frontend && npm install && npm start
 3. Unknown key post-normalization → quarantine with reason rather than producing a compliance blind spot
 4. `invoices_enriched` view = `invoices_clean LEFT JOIN vendors` — LEFT JOIN keeps quarantined rows (NULL vendor columns) visible instead of silently dropping them from downstream queries
 
-**Idempotent.** Data tables are dropped and recreated on each run. Same input → same output. `pipeline_log` is append-only to preserve run history.
+**Idempotent + transactional.** Data tables are dropped and recreated inside a single transaction on each run. Same input → same output. If the pipeline crashes mid-run, DuckDB rolls back to the previous consistent state — no broken half-written tables. `pipeline_log` is append-only: every run is preserved for SOX comparison and reproducibility.
 
-**`AuditEntry(frozen=True)`.** Pydantic's `frozen=True` enforces immutability at the Python level. Once a transformation is recorded it cannot be mutated — required for SOX §8.2 lineage.
+**`AuditEntry(frozen=True)`.** Pydantic's `frozen=True` enforces immutability at the Python level during a pipeline run. Limitation: after persistence to DuckDB, a raw `UPDATE` on the table is still possible — in production, use S3 Object Lock or append-only database permissions to extend the immutability guarantee beyond the Python process.
 
 **`reference_date = max(invoice_date)`.** `datetime.now()` would produce different `OVERDUE_APPROVAL` flags on every run — incompatible with auditability. Using the dataset's own time horizon makes the pipeline deterministic and reproducible. Exposed as a parameter; in production it would be set to the accounting period close date by the scheduler.
 
@@ -65,8 +67,8 @@ Rules were prioritised by policy reference and immediate financial risk:
 - **NO_PO (§2.1)** — maverick spend above EUR 1,000 is the highest-volume control failure in AP processing
 - **BLOCKED_VENDOR / VENDOR_ON_HOLD (§4.1)** — payment to a non-authorised vendor is an immediate financial and compliance risk; INACTIVE and ON_HOLD receive distinct flags because policy §4.1 prescribes different remediation paths for each
 - **PENDING_APPROVAL / OVERDUE_APPROVAL (§3.1)** — unapproved invoices are a control failure; overdue ones are escalation candidates
-- **POTENTIAL_DUPLICATE / LOGICAL_DUPLICATE_CANDIDATE** — duplicate payment is a direct financial loss and a fraud indicator
-- **CREDIT_NOTE (§6.1)** — negative amounts require matching to originating invoice; unmatched credits >90 days escalate to Finance Director
+- **POTENTIAL_DUPLICATE / LOGICAL_DUPLICATE_CANDIDATE** — duplicate payment is a direct financial loss and a fraud indicator; the two flags are mutually exclusive — `POTENTIAL_DUPLICATE` (identical `invoice_number`) takes priority, preventing double-counting when an invoice matches both criteria
+- **CREDIT_NOTE (§6.1)** — negative amounts require matching to originating invoice; unmatched credits >90 days escalate to Finance Director; explicitly excluded from `NO_PO` because §2.1 scopes the purchase order requirement to purchases only — a credit note is a reversal, not a new purchase
 - **APPROVAL_LEVEL_VIOLATION (§3)** — added as `indicative_only=true` pending HR/IAM integration. Inferring roles from observed approval behavior would be circular: someone who approved a €60k invoice may have done so incorrectly — mapping them as Finance Director would mask the violation rather than surface it.
 
 ### SQL agent — data access controls
@@ -103,6 +105,28 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 **Known limitation: `invoice_date` stored as VARCHAR**
 
 `invoice_date` is stored as a `VARCHAR` in the current pipeline. The SQL agent occasionally generates `EXTRACT(YEAR FROM invoice_date)` which fails at runtime on a string column. Mitigation: the SQL system prompt explicitly instructs the LLM to use `invoice_date LIKE '2025%'` or `CAST(invoice_date AS DATE)` instead. Production fix: store as `DATE` type by casting in `_write_to_db` during pipeline ingestion — one line: `inv_df["invoice_date"] = pd.to_datetime(inv_df["invoice_date"]).dt.date`.
+
+### RAG design
+
+**Chunking by `##` headers.** The policy document already has semantic structure from the author — splitting on `##` respects that boundary rather than arbitrary character counts. In production with heterogeneous documents: semantic chunking or a 512-token sliding window with overlap.
+
+**Intent classification — no extra LLM call.** A `frozenset` keyword lookup (`DATA_KEYWORDS`, `POLICY_KEYWORDS`, `APPROVER_ROLE_SIGNALS`) classifies intent before any LLM call. Default when ambiguous: hybrid (both policy + data). This avoids a round-trip to the LLM just to decide what kind of question it is.
+
+**Cosine similarity over 9 chunks.** NumPy dot product on L2-normalised vectors is O(9) — instantaneous. In production with a large policy corpus: hybrid BM25 + dense retrieval with Reciprocal Rank Fusion (RRF), as deployed on ARI's OpenSearch cluster.
+
+**Graceful SQL degradation.** If `generate_sql()` returns `None` (unsafe output or LLM failure), the endpoint falls back to `policy_only` instead of returning a 500. `sql_query` is set to `None` in the evidence payload — the analyst sees the policy answer without a broken SQL trace surfacing in the UI.
+
+### Known limitations
+
+| Limitation | Mitigation in prototype | Production fix |
+|---|---|---|
+| `APPROVAL_LEVEL_VIOLATION` indicative only | `indicative_only=true`, excluded from hard compliance count | HR/IAM integration (Azure AD role lookup) |
+| `AuditEntry(frozen=True)` protects Python run only | Documented; DuckDB `read_only=True` on query connection | S3 Object Lock or append-only DB permissions |
+| `invoice_date` stored as VARCHAR | SQL prompt forbids `EXTRACT()`, instructs `LIKE '2025%'` | Cast to `DATE` in `_write_to_db` |
+| Confidence `"high"` on `data_only` answers | Known bug — `data_only` source should yield `"medium"` | Fix source/confidence mapping in `ask.py` |
+| Fuzzy match threshold 0.7 | Validated on happy path only; unmatched rows quarantined | Calibrate threshold + human review queue for matches 0.7–0.9 |
+| `_sentence_model` as module-level global | Prototype shortcut — simpler than DI | Promote to `app.state.embedder` on FastAPI lifespan |
+| Markdown not rendered in chat | Raw text displayed | Add `react-markdown` to `Chat.jsx` |
 
 ---
 

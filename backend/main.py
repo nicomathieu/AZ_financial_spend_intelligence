@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # Load .env file if present (development convenience — no-op in prod)
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(override=True)
 except ImportError:
     pass
 
@@ -35,7 +35,8 @@ async def lifespan(app: FastAPI):
         litellm.api_base = litellm_host
     if litellm_key:
         litellm.api_key = litellm_key
-    print(f"LiteLLM configured: api_base={litellm.api_base or '(default)'}")
+    litellm_model = os.environ.get("LITELLM_MODEL", "")
+    print(f"LiteLLM configured: api_base={litellm.api_base or '(default)'}, model={litellm_model or '(NOT SET)'}")
 
     # Select embedding backend and build index once at startup
     # init_embedder tries sentence-transformers; falls back to TF-IDF if unavailable
