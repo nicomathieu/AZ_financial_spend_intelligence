@@ -69,6 +69,39 @@ Rules were prioritised by policy reference and immediate financial risk:
 - **CREDIT_NOTE (§6.1)** — negative amounts require matching to originating invoice; unmatched credits >90 days escalate to Finance Director
 - **APPROVAL_LEVEL_VIOLATION (§3)** — added as `indicative_only=true` pending HR/IAM integration. Inferring roles from observed approval behavior would be circular: someone who approved a €60k invoice may have done so incorrectly — mapping them as Finance Director would mask the violation rather than surface it.
 
+### SQL agent — data access controls
+
+The NL-to-SQL agent enforces a two-layer defence against unauthorised data access:
+
+**Layer 1 — system prompt whitelist (`sql_agent/query_builder.py`)**
+
+The prompt Claude receives explicitly names the three business tables analysts are permitted to query:
+
+```
+Allowed tables (query ONLY these):
+  invoices_enriched, compliance_flags, vendors
+
+Do not query pipeline_log, audit_log, or invoices_clean directly.
+```
+
+`pipeline_log` and `audit_log` are internal pipeline metadata — they contain run IDs, transformation history, and raw source values before cleaning. Exposing them to finance analysts would surface implementation details and could reveal intermediate data states that have no meaning in a business context. `invoices_clean` is the raw cleaned table; `invoices_enriched` is the correct analyst surface because it joins vendor master data and is what the compliance rules were validated against.
+
+**Layer 2 — DML keyword blocklist + `read_only=True`**
+
+`_is_safe_select()` in `query_builder.py` validates every generated query before execution: it must start with `SELECT` and must not contain `INSERT`, `UPDATE`, `DELETE`, `DROP`, `CREATE`, `ALTER`, `TRUNCATE`, `REPLACE`, `MERGE`, or `UPSERT`. The DuckDB connection is opened with `read_only=True`, so even if both prompt and code guards were bypassed, the database engine itself would refuse any write operation.
+
+**Defence-in-depth summary:**
+
+| Guard | What it blocks | Where |
+|---|---|---|
+| Prompt whitelist | LLM querying internal tables | `SQL_SYSTEM_PROMPT` |
+| DML keyword blocklist | Write/DDL statements | `_is_safe_select()` |
+| `read_only=True` | Any write at DB engine level | `duckdb.connect()` |
+
+The prompt guard is the first line — it handles the 99% case cleanly. The code and DB guards are independent backstops that require no trust in the LLM output.
+
+---
+
 ### What I deliberately did NOT build
 
 - **Authentication / authorisation** — out of scope for prototype; production path is Azure AD SSO with role-based access
