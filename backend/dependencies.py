@@ -23,8 +23,12 @@ class RAGEngine:
         return retrieve(query_emb, self.embeddings, self.chunks, top_k)
 
 
-def get_db(request: Request) -> duckdb.DuckDBPyConnection:
-    return request.app.state.db
+def get_db(request: Request):
+    conn = duckdb.connect(request.app.state.db_path, read_only=True)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 def get_rag(request: Request) -> RAGEngine:

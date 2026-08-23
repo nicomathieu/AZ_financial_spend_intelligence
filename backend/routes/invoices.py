@@ -41,7 +41,6 @@ def get_flagged_invoices(
 
     where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
 
-    # STRING_AGG then split in Python avoids ARRAY_AGG DISTINCT availability issues
     query = f"""
         SELECT
             ie.invoice_number,

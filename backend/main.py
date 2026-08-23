@@ -3,7 +3,6 @@ import os
 from contextlib import asynccontextmanager
 
 import litellm
-import duckdb
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,14 +21,11 @@ from backend.routes import ask, quality, invoices
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: open DB, init Anthropic client, build RAG index.
-    Shutdown: close DB connection.
-    """
+    """Startup: store DB path, init LiteLLM, build RAG index."""
     db_path = os.environ.get("DB_PATH", "data/spend_intelligence.duckdb")
     policy_path = os.environ.get("POLICY_PATH", "data/procurement_policy.md")
 
-    # Pipeline owns writes; API gets a read-only connection — safe for concurrency
-    app.state.db = duckdb.connect(db_path, read_only=True)
+    app.state.db_path = db_path
 
     # Configure litellm to route through the LiteLLM proxy.
     # All calls to litellm.completion() will use these settings automatically.
@@ -53,8 +49,6 @@ async def lifespan(app: FastAPI):
     print(f"DB: {db_path} (read-only)")
 
     yield
-
-    app.state.db.close()
 
 
 app = FastAPI(
