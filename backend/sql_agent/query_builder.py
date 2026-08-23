@@ -1,5 +1,8 @@
 from __future__ import annotations
+import os
 import litellm
+
+_MODEL = os.environ.get("LITELLM_MODEL", "")
 
 SQL_SYSTEM_PROMPT = """You generate safe, read-only SQL queries for a DuckDB database.
 
@@ -64,7 +67,7 @@ def generate_sql(question: str) -> str | None:
     """Ask the LLM for a SELECT query. Returns None on failure or unsafe output."""
     try:
         response = litellm.completion(
-            model="openai/bedrock-claude-4-5-sonnet-ari-prod",
+            model=_MODEL,
             messages=[
                 {"role": "system", "content": SQL_SYSTEM_PROMPT},
                 {"role": "user", "content": question},
