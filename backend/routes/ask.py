@@ -4,8 +4,6 @@ import os
 from typing import Optional
 
 import litellm
-
-_MODEL = os.environ.get("LITELLM_MODEL", "")
 import duckdb
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -170,7 +168,7 @@ def ask_question(
     # ── 7. Call LLM for answer ────────────────────────────────────────────────
     try:
         llm_response = litellm.completion(
-            model=_MODEL,
+            model=os.environ.get("LITELLM_MODEL", ""),
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
