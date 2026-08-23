@@ -44,6 +44,8 @@ cd frontend && npm install && npm start
 | **TF-IDF fallback for embeddings** | `sentence-transformers` is blocked by AstraZeneca's Zscaler proxy at startup (SSL intercept prevents HuggingFace download). The embedder falls back to scikit-learn TF-IDF fitted on the policy corpus — sufficient for 9 chunks. In production: Azure OpenAI `text-embedding-3-small` via the ARI gateway for data residency compliance. |
 | **LiteLLM via AZ gateway** | All LLM calls route through the ARI LiteLLM proxy (`LITELLM_HOST`). Invoice data never leaves AstraZeneca infrastructure — required for GDPR and AZ data residency policy. Model and host are read from `.env` at call time; no credentials or URLs hardcoded in the repo. |
 
+**LLM routing.** All LLM calls route through a personal LiteLLM proxy (`LITELLM_HOST` + `LITELLM_MODEL` in `.env`). No credentials or model names are hardcoded in the repository — the server reads them lazily at call time so the codebase is environment-agnostic.
+
 ### Pipeline design
 
 **No silent data loss.** Every problematic row is quarantined with an explicit reason and retained in `invoices_clean` with `quarantined=true`. Nothing is ever dropped silently.
@@ -118,25 +120,24 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 
 ### Known limitations
 
-| Limitation | Mitigation in prototype | Production fix |
-|---|---|---|
-| `APPROVAL_LEVEL_VIOLATION` indicative only | `indicative_only=true`, excluded from hard compliance count | HR/IAM integration (Azure AD role lookup) |
-| `AuditEntry(frozen=True)` protects Python run only | Documented; DuckDB `read_only=True` on query connection | S3 Object Lock or append-only DB permissions |
-| `invoice_date` stored as VARCHAR | SQL prompt forbids `EXTRACT()`, instructs `LIKE '2025%'` | Cast to `DATE` in `_write_to_db` |
-| Confidence `"high"` on `data_only` answers | Known bug — `data_only` source should yield `"medium"` | Fix source/confidence mapping in `ask.py` |
-| Fuzzy match threshold 0.7 | Validated on happy path only; unmatched rows quarantined | Calibrate threshold + human review queue for matches 0.7–0.9 |
-| `_sentence_model` as module-level global | Prototype shortcut — simpler than DI | Promote to `app.state.embedder` on FastAPI lifespan |
-| Markdown not rendered in chat | Raw text displayed | Add `react-markdown` to `Chat.jsx` |
+- **`APPROVAL_LEVEL_VIOLATION` is indicative only** — role mapping uses a mock `approver_roles.json`. Inferring roles from observed invoice behaviour would be circular. Production fix: live Azure AD lookup.
+- **`AuditEntry(frozen=True)` protects immutability during the Python pipeline run only.** Once written to DuckDB, a direct `UPDATE` on `audit_log` is possible. Production fix: append-only table permissions or S3 Object Lock.
+- **`invoice_date` stored as `VARCHAR`** — SQL agent occasionally generates `EXTRACT(YEAR FROM ...)`, which fails. Mitigated via a system prompt instruction. Production fix: store as `DATE` type in `_write_to_db`.
+- **Fuzzy match threshold 0.7** validated on the happy path only. Production fix: calibrate using a labelled test set + human review queue for matches 0.7–0.9.
+- **Embedder uses TF-IDF fallback** — `sentence-transformers` blocked by AZ Zscaler SSL proxy at startup. Production fix: Azure OpenAI embeddings via the ARI gateway for data residency compliance.
+- **Confidence scoring shows `"high"` for data-only responses** — should be `"medium"`. Known bug, low priority for the prototype.
+- **Markdown not rendered in chat** — raw text displayed. Fix: `react-markdown` in `Chat.jsx`.
 
 ---
 
 ### What I deliberately did NOT build
 
-- **Authentication / authorisation** — out of scope for prototype; production path is Azure AD SSO with role-based access
-- **Real-time pipeline** — batch processing is appropriate for AP invoice workflows; streaming would add infrastructure complexity with no business benefit at this scale
+- **Authentication / authorisation** — out of scope per brief; production path is Azure AD SSO with role-based access (analyst / controller / auditor)
+- **CI/CD and deployment** — out of scope per brief; runs locally only. Production gate: pipeline eval metrics (quarantine rate, flag precision/recall) before any merge
 - **Production vector DB** — 15 policy chunks do not warrant Pinecone or ChromaDB; the right trigger is >1,000 chunks or multi-document retrieval
-- **CI/CD** — noted as production requirement; would gate on pipeline eval metrics (see §4)
-- **Pixel-perfect UI** — functional beats beautiful for an internal finance prototype
+- **Full evaluation harness** — evaluation strategy is described in §4 and is the correct production design; not implemented in the prototype
+- **Pixel-perfect styling** — functionality takes precedence over aesthetics for an internal finance tool
+- **dbt lineage** — would add value for the data warehouse transformation layer in production; the Python pipeline handles complex imperative data ingestion (fuzzy matching, multi-step quarantine logic) which dbt's declarative SQL model cannot replace
 
 ---
 
@@ -214,11 +215,11 @@ Compliance flag accuracy
 
 | Component | Time |
 |-----------|------|
-| Pipeline | Xh |
-| Backend | Xh |
-| Frontend | Xh |
-| README | Xh |
-| **Total** | **Xh** |
+| Pipeline | ~2h |
+| Backend | ~2h |
+| Frontend | ~1.5h |
+| README | ~1h |
+| **Total** | **~6.5h** |
 
 **What I'd do next with more time:**
 
