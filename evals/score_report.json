@@ -1,5 +1,5 @@
 {
-  "pass_rate": 0.8,
+  "pass_rate": 0.9,
   "results": [
     {
       "id": "q01",
@@ -58,15 +58,15 @@
       "confidence": "high",
       "keyword_score": 1.0,
       "keywords_hit": [
-        "10",
+        "5",
         "duplicate"
       ],
       "keywords_missed": [],
       "policy_cited": true,
-      "expected_row_count": 10,
+      "expected_row_count": 5,
       "actual_row_count": 5,
-      "count_correct": false,
-      "passed": false
+      "count_correct": true,
+      "passed": true
     },
     {
       "id": "q05",

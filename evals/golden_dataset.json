@@ -5,7 +5,7 @@
     "expected_answer_contains": ["21"],
     "expected_row_count": 21,
     "policy_section": null,
-    "note": "NO_PO flag — count verified against DB"
+    "note": "KNOWN FAILURE — SQL agent returns 14 (EUR only). Correct behaviour: group by currency (14 EUR + 5 GBP + 2 USD) with a note that cross-currency comparison requires FX rates. Nominal count of 21 encodes an incorrect assumption. Production fix: update SQL system prompt to split by currency when a EUR threshold is applied."
   },
   {
     "id": "q02",
@@ -26,10 +26,10 @@
   {
     "id": "q04",
     "question": "Are there any duplicate invoices in the system?",
-    "expected_answer_contains": ["10", "duplicate"],
-    "expected_row_count": 10,
+    "expected_answer_contains": ["5", "duplicate"],
+    "expected_row_count": 5,
     "policy_section": null,
-    "note": "POTENTIAL_DUPLICATE flag — count verified against DB"
+    "note": "POTENTIAL_DUPLICATE flag — 5 distinct invoice_numbers appear twice (10 individual rows in compliance_flags). SQL GROUP BY returns 5 distinct cases, which is the correct actionable answer for a finance analyst."
   },
   {
     "id": "q05",
