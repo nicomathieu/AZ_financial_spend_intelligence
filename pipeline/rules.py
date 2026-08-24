@@ -63,20 +63,34 @@ class CreditNoteRule:
 
 
 class NoPORule:
-    """§2.1 — purchases ≥ EUR 1,000 require an approved PO."""
+    """§2.1 — purchases ≥ EUR 1,000 require an approved PO.
+
+    For non-EUR invoices the EUR 1,000 threshold cannot be applied without FX
+    rates. We flag if the nominal amount ≥ 1,000 in the invoice currency and
+    note the currency explicitly — a finance controller must confirm whether
+    the EUR equivalent crosses the threshold.
+    """
 
     def check(self, invoice, vendor_map, approver_roles, all_invoices, reference_date):
         if invoice.quarantined or invoice.amount < 0:
             return []
         if not invoice.po_number and invoice.amount >= 1_000:
+            if invoice.currency == "EUR":
+                detail = (
+                    f"Amount {invoice.amount:.2f} EUR ≥ EUR 1,000 threshold "
+                    "with no PO number (maverick spend, §2.1)"
+                )
+            else:
+                detail = (
+                    f"Amount {invoice.amount:.2f} {invoice.currency} ≥ 1,000 nominal "
+                    "with no PO number — EUR equivalent requires FX conversion to "
+                    "confirm §2.1 threshold breach; flagged for controller review"
+                )
             return [ComplianceFlag(
                 row_id=invoice.row_id,
                 invoice_number=invoice.invoice_number,
                 flag_type=FlagType.NO_PO,
-                detail=(
-                    f"Amount {invoice.amount:.2f} {invoice.currency} ≥ EUR 1,000 "
-                    "with no PO number (maverick spend, §2.1)"
-                ),
+                detail=detail,
             )]
         return []
 

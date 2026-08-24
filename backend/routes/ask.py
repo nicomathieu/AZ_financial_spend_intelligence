@@ -123,9 +123,9 @@ def ask_question(
                 sql_query = None   # don't surface a broken query in evidence
 
     # ── 4. Classify source ───────────────────────────────────────────────────
-    if sql_results and needs_policy:
+    if sql_results is not None and needs_policy:
         source = "hybrid"
-    elif sql_results:
+    elif sql_results is not None:
         source = "data_only"
     else:
         source = "policy_only"
@@ -134,7 +134,7 @@ def ask_question(
     needs_role_lookup = any(sig in q_lower for sig in APPROVER_ROLE_SIGNALS)
     if needs_role_lookup and not sql_results:
         confidence = "low"
-    elif sql_results and policy_chunks:
+    elif sql_results is not None and policy_chunks:
         confidence = "high"
     else:
         confidence = "medium"

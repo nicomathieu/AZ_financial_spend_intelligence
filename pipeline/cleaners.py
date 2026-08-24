@@ -97,11 +97,12 @@ def normalize_vendor_id(
 def normalize_vendor_name(
     raw: str, row_id: int, invoice_number: str
 ) -> tuple[str, Optional[AuditEntry]]:
-    """Strip + title-case. Original preserved in CleanInvoice.vendor_name_raw."""
-    normalized = raw.strip().title()
+    """Strip and collapse whitespace only — preserve canonical commercial casing."""
+    import re
+    normalized = re.sub(r"\s+", " ", raw.strip())
     if normalized == raw:
         return normalized, None
-    entry = _audit(row_id, invoice_number, "vendor_name", raw, normalized, "Normalized vendor name (strip + title case)")
+    entry = _audit(row_id, invoice_number, "vendor_name", raw, normalized, "Normalized vendor name (strip + whitespace collapse)")
     return normalized, entry
 
 
@@ -126,8 +127,8 @@ def resolve_vendor_id(
     Fuzzy-matches a missing vendor_id from vendor_name against the vendor master.
     Returns (vendor_id, audit_entry) or (None, None) when no match found.
     """
-    normalized = vendor_name_raw.strip().title()
-    master = {v.vendor_name.strip().title(): v.vendor_id for v in vendors}
+    normalized = vendor_name_raw.strip().casefold()
+    master = {v.vendor_name.strip().casefold(): v.vendor_id for v in vendors}
 
     # cutoff=0.7 was chosen empirically on this dataset and kept as a good fit.
     # Too low → false positives (wrong vendor matched silently).
