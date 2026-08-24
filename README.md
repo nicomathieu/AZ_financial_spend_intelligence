@@ -168,6 +168,27 @@ Compliance flag accuracy
 | SQL accuracy | Does generated SQL return correct rows on known data? |
 | Answer relevance | Is the answer responsive to the question asked? |
 
+**Current results: 8/10 passed (80%) — CI gate: PASS (threshold 70%)**
+
+Run: `python evals/score.py`
+
+| Question | Status | Notes |
+|---|---|---|
+| q01 NO_PO count | ❌ | SQL agent filters EUR only — misses GBP/USD invoices (got 14, expected 21) |
+| q02 Non-ACTIVE vendor spend | ✅ | |
+| q03 Approval threshold §3 | ✅ | |
+| q04 Duplicate invoices | ❌ | GROUP BY deduplicates pairs — returns 5 instead of 10 individual flagged rows |
+| q05 Payment terms §5.2 | ✅ | |
+| q06 PENDING_APPROVAL count | ✅ | |
+| q07 ON_HOLD handling §4.1 | ✅ | |
+| q08 OVERDUE_APPROVAL count | ✅ | |
+| q09 Credit note reconciliation §6.1 | ✅ | |
+| q10 Record retention §8.1 | ✅ | |
+
+Production fix for q01/q04: additional SQL system prompt instructions on multi-currency counting and individual row counting vs pair counting.
+
+> Ground truth for numeric questions is derived from `sql_results` in the evidence payload — more reliable than substring matching against prose answers, and automatically stays in sync with pipeline output.
+
 **Online (production, sampled):**
 
 | Metric | Signal |
