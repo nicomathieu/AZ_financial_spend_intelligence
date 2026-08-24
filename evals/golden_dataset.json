@@ -1,0 +1,82 @@
+[
+  {
+    "id": "q01",
+    "question": "How many invoices over EUR 1,000 are missing a purchase order?",
+    "expected_answer_contains": ["21"],
+    "expected_row_count": 21,
+    "policy_section": null,
+    "note": "NO_PO flag — count verified against DB"
+  },
+  {
+    "id": "q02",
+    "question": "What is the total spend with non-active vendors?",
+    "expected_answer_contains": ["INACTIVE", "ON_HOLD", "1066", "401"],
+    "expected_row_count": null,
+    "policy_section": null,
+    "note": "No EUR conversion column — match status labels and per-status counts"
+  },
+  {
+    "id": "q03",
+    "question": "Who can approve a purchase of EUR 60,000?",
+    "expected_answer_contains": ["50,000", "Finance Director", "250,000"],
+    "expected_row_count": null,
+    "policy_section": "3",
+    "note": "Policy-only §3 — keyword match against prose answer"
+  },
+  {
+    "id": "q04",
+    "question": "Are there any duplicate invoices in the system?",
+    "expected_answer_contains": ["10", "duplicate"],
+    "expected_row_count": 10,
+    "policy_section": null,
+    "note": "POTENTIAL_DUPLICATE flag — count verified against DB"
+  },
+  {
+    "id": "q05",
+    "question": "What are the standard payment terms for suppliers?",
+    "expected_answer_contains": ["60", "days", "net"],
+    "expected_row_count": null,
+    "policy_section": "5.2",
+    "note": "Policy-only §5.2"
+  },
+  {
+    "id": "q06",
+    "question": "How many invoices are pending approval with no approver assigned?",
+    "expected_answer_contains": ["26", "pending"],
+    "expected_row_count": 26,
+    "policy_section": null,
+    "note": "PENDING_APPROVAL flag — count verified against DB"
+  },
+  {
+    "id": "q07",
+    "question": "How should invoices from vendors placed on hold be handled?",
+    "expected_answer_contains": ["escalat", "Procurement Excellence", "4.1"],
+    "expected_row_count": null,
+    "policy_section": "4.1",
+    "note": "Policy-only §4.1"
+  },
+  {
+    "id": "q08",
+    "question": "How many invoices are overdue for approval?",
+    "expected_answer_contains": ["24", "overdue"],
+    "expected_row_count": 24,
+    "policy_section": null,
+    "note": "OVERDUE_APPROVAL flag — count verified against DB"
+  },
+  {
+    "id": "q09",
+    "question": "Are there any credit notes and how should they be reconciled?",
+    "expected_answer_contains": ["credit", "note", "match", "original"],
+    "expected_row_count": null,
+    "policy_section": "6.1",
+    "note": "Hybrid §6.1 — keyword match; count=2 CREDIT_NOTE flags"
+  },
+  {
+    "id": "q10",
+    "question": "What is the document retention period for invoice records?",
+    "expected_answer_contains": ["10", "years"],
+    "expected_row_count": null,
+    "policy_section": "8.1",
+    "note": "Policy-only §8.1"
+  }
+]

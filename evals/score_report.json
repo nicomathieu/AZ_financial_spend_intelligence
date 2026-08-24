@@ -1,0 +1,172 @@
+{
+  "pass_rate": 0.8,
+  "results": [
+    {
+      "id": "q01",
+      "question": "How many invoices over EUR 1,000 are missing a purchase order?",
+      "confidence": "high",
+      "keyword_score": 0.0,
+      "keywords_hit": [],
+      "keywords_missed": [
+        "21"
+      ],
+      "policy_cited": true,
+      "expected_row_count": 21,
+      "actual_row_count": 14,
+      "count_correct": false,
+      "passed": false
+    },
+    {
+      "id": "q02",
+      "question": "What is the total spend with non-active vendors?",
+      "confidence": "high",
+      "keyword_score": 0.5,
+      "keywords_hit": [
+        "INACTIVE",
+        "ON_HOLD"
+      ],
+      "keywords_missed": [
+        "1066",
+        "401"
+      ],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    },
+    {
+      "id": "q03",
+      "question": "Who can approve a purchase of EUR 60,000?",
+      "confidence": "high",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "50,000",
+        "Finance Director",
+        "250,000"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    },
+    {
+      "id": "q04",
+      "question": "Are there any duplicate invoices in the system?",
+      "confidence": "high",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "10",
+        "duplicate"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": 10,
+      "actual_row_count": 5,
+      "count_correct": false,
+      "passed": false
+    },
+    {
+      "id": "q05",
+      "question": "What are the standard payment terms for suppliers?",
+      "confidence": "medium",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "60",
+        "days",
+        "net"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    },
+    {
+      "id": "q06",
+      "question": "How many invoices are pending approval with no approver assigned?",
+      "confidence": "high",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "26",
+        "pending"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": 26,
+      "actual_row_count": 26,
+      "count_correct": true,
+      "passed": true
+    },
+    {
+      "id": "q07",
+      "question": "How should invoices from vendors placed on hold be handled?",
+      "confidence": "high",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "escalat",
+        "Procurement Excellence",
+        "4.1"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    },
+    {
+      "id": "q08",
+      "question": "How many invoices are overdue for approval?",
+      "confidence": "high",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "24",
+        "overdue"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": 24,
+      "actual_row_count": 24,
+      "count_correct": true,
+      "passed": true
+    },
+    {
+      "id": "q09",
+      "question": "Are there any credit notes and how should they be reconciled?",
+      "confidence": "medium",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "credit",
+        "note",
+        "match",
+        "original"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    },
+    {
+      "id": "q10",
+      "question": "What is the document retention period for invoice records?",
+      "confidence": "medium",
+      "keyword_score": 1.0,
+      "keywords_hit": [
+        "10",
+        "years"
+      ],
+      "keywords_missed": [],
+      "policy_cited": true,
+      "expected_row_count": null,
+      "actual_row_count": null,
+      "count_correct": null,
+      "passed": true
+    }
+  ]
+}
