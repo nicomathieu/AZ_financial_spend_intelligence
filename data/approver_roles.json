@@ -1,0 +1,11 @@
+{
+  "_note": "Mock IAM integration point. In production: real-time lookup against Azure AD / HR system. Inferring roles from observed approvals would be circular — see pipeline/rules.py ApprovalLevelViolationRule.",
+  "indicative_only": true,
+  "roles": {
+    "r.okafor":   "cost_center_owner",
+    "j.smith":    "department_head",
+    "l.chen":     "finance_director",
+    "m.garcia":   "department_head",
+    "a.kowalski": "department_head"
+  }
+}

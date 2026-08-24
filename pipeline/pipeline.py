@@ -167,11 +167,18 @@ def _write_to_db(
     for table, df in [
         ("invoices_clean", inv_df),
         ("vendors", ven_df),
-        ("audit_log", aud_df),
         ("compliance_flags", flags_df),
     ]:
         conn.execute(f"DROP TABLE IF EXISTS {table}")
         conn.execute(f"CREATE TABLE {table} AS SELECT * FROM df")
+
+    # audit_log is append-only — never dropped between runs so the full
+    # transformation history is preserved for SOX §8.2 lineage.
+    tables = {row[0] for row in conn.execute("SHOW TABLES").fetchall()}
+    if "audit_log" in tables:
+        conn.execute("INSERT INTO audit_log SELECT * FROM aud_df")
+    else:
+        conn.execute("CREATE TABLE audit_log AS SELECT * FROM aud_df")
 
     # Enriched view: invoices joined to vendor master.
     # LEFT JOIN deliberately — quarantined rows (vendor_id='') remain visible

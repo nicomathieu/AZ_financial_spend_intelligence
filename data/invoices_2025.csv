@@ -1,0 +1,146 @@
+invoice_number,invoice_date,vendor_id,vendor_name,description,amount,currency,cost_center,po_number,approved_by
+INV-20072,03-18-2025,V-1008,BioReagent Direct,Lab consumables order,86964.57,EUR,CC-COM-440,PO-74951,r.okafor
+INV-20111,22.06.2025,V-1001,  LABTECH SOLUTIONS GMBH ,Logistics & freight,3479.64,EUR,CC-OPS-330,PO-76272,r.okafor
+INV-20107,02/07/2025,V-1001,  LABTECH SOLUTIONS GMBH ,Equipment maintenance,84170.64,EUR,CC-FIN-100,PO-78897,l.chen
+INV-20022,03.07.2025,V-1008,BioReagent Direct,Q3 consulting services,78818.79,EUR,CC-FIN-100,PO-74291,a.kowalski
+INV-20077,07-06-2025,V1010,Crown Travel Partners,Cloud hosting,5148.47,eur,CC-COM-440,,l.chen
+INV-20002,07.03.2025,V-1010,Crown Travel Partners,Equipment maintenance,21082.18,GBP,CC-OPS-330,PO-72615,m.garcia
+INV-20046,23.08.2025,V-1009,Stellar Facilities Mgmt,Logistics & freight,25868.3,EUR,CC-RND-210,PO-75169,m.garcia
+INV-20078,06-02-2025,V-1009,Stellar Facilities Mgmt,Q2 consulting services,43611.59,EUR,CC-FIN-100,PO-76984,
+INV-20119,02-21-2025,V-1007,Quanta Cloud Services,Facilities services,61045.65,EUR,CC-COM-440,PO-76653,j.smith
+INV-20125,20.04.2025,V-1006,PharmaPrint Studios,Q2 consulting services,47597.39,EUR,CC-IT-550,PO-77761,j.smith
+INV-20071,02-01-2025,V-1006,PharmaPrint Studios,Conference & travel,51057.79,USD,CC-RND-210,PO-74295,r.okafor
+INV-20063,23.09.2025,V-1007,Quanta Cloud Services,Statistical analysis support,82899.36,EUR,CC-FIN-100,PO-74708,m.garcia
+INV-20098,13/06/2025,V-1010,Crown Travel Partners,Statistical analysis support,15564.28,eur,CC-OPS-330,PO-70715,j.smith
+INV-20103,07/02/2025,V-1002,ClinSupply Iberia S.L.,Statistical analysis support,52217.62,eur,CC-IT-550,PO-74720,l.chen
+INV-20091,25.11.2025,V-1003,  DATABRIDGE ANALYTICS LTD ,Statistical analysis support,64765.08,GBP,CC-OPS-330,PO-75179,a.kowalski
+INV-20035,08.04.2025,V-1002,ClinSupply Iberia S.L.,Logistics & freight,65980.32,eur,CC-IT-550,PO-75421,m.garcia
+INV-20024,06-04-2025,V-1004,MedPack Logistics BV,Statistical analysis support,74150.62,USD,CC-COM-440,,r.okafor
+INV-20061,16.09.2025,V-1001,Labtech Solutions GmbH,Software licence renewal,36787.99,eur,CC-COM-440,PO-72068,
+INV-20064,2025-06-10,V-1008,BioReagent Direct,Equipment maintenance,4540.86,EUR,CC-RND-210,PO-72385,a.kowalski
+INV-20086,22.09.2025,V1002,ClinSupply Iberia S.L.,Q3 consulting services,50143.89,EUR,CC-OPS-330,PO-79819,j.smith
+INV-20042,10-14-2025,V-1007,Quanta Cloud Services,Software licence renewal,60446.18,USD,CC-COM-440,,
+INV-20090,17/03/2025,V-1009,Stellar Facilities Mgmt,Conference & travel,86079.59,EUR,CC-FIN-100,PO-72419,r.okafor
+INV-20130,10-08-2025,V-1010,Crown Travel Partners,Equipment maintenance,53097.78,EUR,CC-OPS-330,PO-78011,a.kowalski
+INV-20120,20/05/2025,V-1008,BioReagent Direct,Conference & travel,29819.07,eur,CC-OPS-330,PO-75658,r.okafor
+INV-20073,18/01/2025,V-1002,ClinSupply Iberia S.L.,Marketing materials,37031.4,EUR,CC-OPS-330,PO-72531,
+INV-20117,11/04/2025,V-1005,Helix Consulting AG,Equipment maintenance,32989.91,GBP,CC-RND-210,PO-79024,m.garcia
+INV-20014,04.04.2025,V-1007,Quanta Cloud Services,Facilities services,33774.5,USD,CC-FIN-100,,r.okafor
+INV-20062,24/10/2025,V-1002,ClinSupply Iberia S.L.,Software licence renewal,39054.17,eur,CC-IT-550,PO-74342,m.garcia
+INV-20113,15/09/2025,V-1005,Helix Consulting AG,Facilities services,94655.34,EUR,CC-FIN-100,,j.smith
+INV-20101,05.12.2025,V1005,Helix Consulting AG,Facilities services,8876.28,EUR,CC-OPS-330,PO-76797,a.kowalski
+INV-20026,27/08/2025,V-1008,BioReagent Direct,Logistics & freight,21317.61,eur,CC-IT-550,PO-71137,
+INV-20082,09-10-2025,V-1001,Labtech Solutions GmbH,Logistics & freight,10003.41,GBP,CC-OPS-330,PO-73674,j.smith
+INV-20129,11.06.2025,V-1003,DataBridge Analytics Ltd,Software licence renewal,50005.74,EUR,CC-OPS-330,PO-75608,
+INV-20041,04-23-2025,V-1002,ClinSupply Iberia S.L.,Lab consumables order,80804.8,GBP,CC-FIN-100,PO-75688,l.chen
+INV-20092,2025-02-17,V1010,Crown Travel Partners,Q1 consulting services,29612.87,USD,CC-IT-550,PO-74703,m.garcia
+INV-20040,2025-06-20,V-1006,PharmaPrint Studios,Equipment maintenance,73930.23,EUR,CC-RND-210,PO-75111,m.garcia
+INV-20065,22/12/2025,V-1002,ClinSupply Iberia S.L.,Software licence renewal,47368.81,GBP,CC-OPS-330,PO-74161,j.smith
+INV-20138,05-22-2025,V-1005,Helix Consulting AG,Equipment maintenance,65633.33,eur,CC-OPS-330,PO-73590,a.kowalski
+INV-20038,02-13-2025,V-1003,DataBridge Analytics Ltd,Conference & travel,"20,249.63",EUR,CC-OPS-330,PO-76906,
+INV-20122,16.04.2025,V-1006,PharmaPrint Studios,Facilities services,47472.4,EUR,CC-FIN-100,,m.garcia
+INV-20004,2025-06-03,V-1006,PharmaPrint Studios,Lab consumables order,62880.99,EUR,CC-RND-210,PO-76227,j.smith
+INV-20137,08.08.2025,V-1001,Labtech Solutions GmbH,Equipment maintenance,71651.21,EUR,CC-COM-440,PO-70187,l.chen
+INV-20136,22/09/2025,V-1006,PharmaPrint Studios,Cloud hosting,16820.43,eur,CC-RND-210,PO-71421,
+INV-20076,06-01-2025,V-1006,PharmaPrint Studios,Software licence renewal,81574.07,EUR,CC-RND-210,PO-72858,l.chen
+INV-20100,26/04/2025,V-1007,Quanta Cloud Services,Facilities services,82958.04,EUR,CC-RND-210,PO-71680,a.kowalski
+INV-20034,07-27-2025,V1008,BioReagent Direct,Facilities services,72794.45,GBP,CC-IT-550,PO-77206,r.okafor
+INV-20043,12-19-2025,V-1008,BioReagent Direct,Lab consumables order,30740.92,EUR,CC-COM-440,PO-73995,a.kowalski
+INV-20010,11.03.2025,V-1009,Stellar Facilities Mgmt,Equipment maintenance,2026.78,EUR,CC-FIN-100,,j.smith
+INV-20108,07-26-2025,V-1006,PharmaPrint Studios,Facilities services,41611.73,USD,CC-FIN-100,PO-73060,
+INV-20106,07-02-2025,V-1010,Crown Travel Partners,Software licence renewal,51953.02,eur,CC-COM-440,PO-77840,r.okafor
+INV-20140,18/06/2025,V-1009,Stellar Facilities Mgmt,Facilities services,15781.41,GBP,CC-RND-210,PO-79554,m.garcia
+INV-20044,05-07-2025,V-1006,PharmaPrint Studios,Equipment maintenance,75830.46,EUR,CC-COM-440,PO-74526,l.chen
+INV-20050,10.11.2025,V-1007,Quanta Cloud Services,Q4 consulting services,29136.15,GBP,CC-RND-210,PO-71625,l.chen
+INV-20095,2025-07-11,V-1001,Labtech Solutions GmbH,Equipment maintenance,53086.07,USD,CC-OPS-330,PO-79874,a.kowalski
+INV-20067,2025-09-10,V-1006,PharmaPrint Studios,Cloud hosting,92908.7,eur,CC-COM-440,,a.kowalski
+INV-20021,04/09/2025,V-1001,Labtech Solutions GmbH,Marketing materials,25256.66,EUR,CC-IT-550,PO-79909,j.smith
+INV-20037,22.11.2025,V-1001,Labtech Solutions GmbH,Software licence renewal,68846.88,USD,CC-COM-440,PO-76455,l.chen
+INV-20128,2025-04-19,V-1003,DataBridge Analytics Ltd,Conference & travel,18270.17,USD,CC-FIN-100,,
+INV-20053,10.12.2025,,ClinSupply Iberia S.L.,Marketing materials,89564.56,GBP,CC-FIN-100,PO-79798,
+INV-20081,03.01.2025,V-1002,ClinSupply Iberia S.L.,Conference & travel,9336.24,eur,CC-COM-440,PO-79608,j.smith
+INV-20139,26/12/2025,V-1007,Quanta Cloud Services,Statistical analysis support,72419.53,eur,CC-IT-550,PO-78653,m.garcia
+INV-20033,05-22-2025,V-1008,BioReagent Direct,Statistical analysis support,90262.76,USD,CC-COM-440,PO-76991,r.okafor
+INV-20075,2025-06-21,V1002,ClinSupply Iberia S.L.,Logistics & freight,4975.85,EUR,CC-RND-210,PO-73362,j.smith
+INV-20008,13.02.2025,V-1007,Quanta Cloud Services,Q1 consulting services,50350.62,GBP,CC-RND-210,PO-78797,r.okafor
+INV-20028,02.05.2025,V-1010,Crown Travel Partners,Logistics & freight,340.37,GBP,CC-IT-550,PO-75409,a.kowalski
+INV-20116,11-22-2025,V-1002,ClinSupply Iberia S.L.,Statistical analysis support,12348.69,GBP,CC-RND-210,PO-72114,j.smith
+INV-20057,09-05-2025,V-1004,MedPack Logistics BV,Facilities services,41722.17,eur,CC-FIN-100,,m.garcia
+INV-20052,04/05/2025,V-1005,Helix Consulting AG,Software licence renewal,61588.72,EUR,CC-COM-440,,m.garcia
+INV-20015,18.04.2025,V-1004,MedPack Logistics BV,Equipment maintenance,13472.09,EUR,CC-IT-550,PO-71235,
+INV-20093,2025-12-18,V-1007,  QUANTA CLOUD SERVICES ,Logistics & freight,42823.75,GBP,CC-OPS-330,PO-78214,a.kowalski
+INV-20007,19.09.2025,V-1009,Stellar Facilities Mgmt,Conference & travel,85311.57,USD,CC-RND-210,PO-72266,j.smith
+INV-20117,11/04/2025,V-1005,Helix Consulting AG,Equipment maintenance,32989.91,GBP,CC-RND-210,PO-79024,m.garcia
+INV-20080,15/05/2025,V-1009,Stellar Facilities Mgmt,Cloud hosting,39417.8,USD,CC-COM-440,PO-75120,
+INV-20013,01-28-2025,V-1004,MedPack Logistics BV,Equipment maintenance,6898.69,EUR,CC-COM-440,PO-78834,r.okafor
+INV-20131,22.03.2025,V-1005,Helix Consulting AG,Conference & travel,85116.01,USD,CC-COM-440,PO-74712,j.smith
+INV-20027,09/01/2025,V-1006,PharmaPrint Studios,Q1 consulting services,55231.52,EUR,CC-COM-440,PO-75663,m.garcia
+INV-20031,26/07/2025,V-1004,MedPack Logistics BV,Logistics & freight,14152.1,EUR,CC-COM-440,PO-71193,
+INV-20096,2025-10-20,V-1005,Helix Consulting AG,Conference & travel,-29534.55,USD,CC-OPS-330,PO-78624,j.smith
+INV-20132,06-09-2025,V-1004,MedPack Logistics BV,Statistical analysis support,13196.22,GBP,CC-COM-440,PO-78700,j.smith
+INV-20005,21/03/2025,V-1005,Helix Consulting AG,Software licence renewal,50827.14,EUR,CC-FIN-100,PO-79125,
+INV-20015,18.04.2025,V-1004,MedPack Logistics BV,Equipment maintenance,13472.09,EUR,CC-IT-550,PO-71235,
+INV-20025,11.06.2025,V-1001,Labtech Solutions GmbH,Logistics & freight,"76,247.94",eur,CC-RND-210,,a.kowalski
+INV-20036,11-01-2025,V-1001,Labtech Solutions GmbH,Cloud hosting,28494.45,USD,CC-COM-440,PO-78947,l.chen
+INV-20020,03-07-2025,V-1002,ClinSupply Iberia S.L.,Lab consumables order,12739.53,EUR,CC-IT-550,PO-72584,j.smith
+INV-20107,02/07/2025,V-1001,  LABTECH SOLUTIONS GMBH ,Equipment maintenance,84170.64,EUR,CC-FIN-100,PO-78897,l.chen
+INV-20059,07/05/2025,V-1008,  BIOREAGENT DIRECT ,Cloud hosting,82107.03,EUR,CC-IT-550,PO-78318,a.kowalski
+INV-20032,2025-10-05,V-1008,BioReagent Direct,Cloud hosting,84822.0,EUR,CC-FIN-100,,j.smith
+INV-20030,12-20-2025,V-1004,MedPack Logistics BV,Logistics & freight,44270.18,USD,CC-FIN-100,PO-72780,l.chen
+INV-20114,09-03-2025,V-1006,PharmaPrint Studios,Software licence renewal,84696.07,EUR,CC-OPS-330,PO-71988,a.kowalski
+INV-20104,27.01.2025,V-1008,  BIOREAGENT DIRECT ,Marketing materials,56762.8,EUR,CC-RND-210,PO-72352,l.chen
+INV-20055,08-11-2025,V-1008,BioReagent Direct,Conference & travel,63722.06,EUR,CC-FIN-100,PO-74722,
+INV-20110,03-28-2025,V1008,BioReagent Direct,Equipment maintenance,58480.22,USD,CC-RND-210,PO-70939,r.okafor
+INV-20087,01.07.2025,V-1005,Helix Consulting AG,Software licence renewal,71011.88,EUR,CC-FIN-100,PO-73770,
+INV-20060,18.05.2025,V-1008,BioReagent Direct,Marketing materials,32904.65,GBP,CC-COM-440,PO-75272,
+INV-20039,2025-03-02,V-1004,MedPack Logistics BV,Q1 consulting services,90222.18,EUR,CC-OPS-330,,l.chen
+INV-20003,02-04-2025,V-1002,ClinSupply Iberia S.L.,Equipment maintenance,80539.42,GBP,CC-IT-550,PO-78785,m.garcia
+INV-20097,25.05.2025,V-1003,DataBridge Analytics Ltd,Software licence renewal,18385.94,EUR,CC-OPS-330,PO-71657,m.garcia
+INV-20132,06-09-2025,V-1004,MedPack Logistics BV,Statistical analysis support,13196.22,GBP,CC-COM-440,PO-78700,j.smith
+INV-20029,11-13-2025,V-1005,Helix Consulting AG,Cloud hosting,-52749.39,EUR,CC-OPS-330,PO-72851,r.okafor
+INV-20123,20.08.2025,V-1001,Labtech Solutions GmbH,Lab consumables order,27274.66,EUR,CC-FIN-100,,
+INV-20135,18.12.2025,V-1005,Helix Consulting AG,Marketing materials,84499.63,EUR,CC-FIN-100,PO-71845,
+INV-20068,06-26-2025,V-1005,Helix Consulting AG,Statistical analysis support,20946.01,EUR,CC-COM-440,PO-72240,a.kowalski
+INV-20051,03/06/2025,V-1004,MedPack Logistics BV,Statistical analysis support,433.71,USD,CC-RND-210,PO-73792,
+INV-20069,2025-09-05,V-1001,Labtech Solutions GmbH,Cloud hosting,86430.91,EUR,CC-RND-210,PO-78837,j.smith
+INV-20023,06-02-2025,V-1002,ClinSupply Iberia S.L.,Cloud hosting,55413.56,EUR,CC-OPS-330,,j.smith
+INV-20134,14/01/2025,V-1004,  MEDPACK LOGISTICS BV ,Cloud hosting,88734.54,EUR,CC-OPS-330,PO-74742,
+INV-20045,16.06.2025,V-1008,BioReagent Direct,Lab consumables order,42675.91,EUR,CC-COM-440,PO-73986,a.kowalski
+INV-20084,2025-06-21,V-1002,ClinSupply Iberia S.L.,Logistics & freight,8880.46,GBP,CC-IT-550,PO-75585,
+INV-20126,05-20-2025,V-1006,PharmaPrint Studios,Marketing materials,56476.97,GBP,CC-COM-440,PO-79222,l.chen
+INV-20070,11-24-2025,V-1005,Helix Consulting AG,Lab consumables order,76437.33,USD,CC-IT-550,PO-73696,j.smith
+INV-20085,2025-01-06,V-1002,ClinSupply Iberia S.L.,Facilities services,64085.71,EUR,CC-COM-440,PO-79946,r.okafor
+INV-20088,02-03-2025,V-1007,  QUANTA CLOUD SERVICES ,Cloud hosting,54773.48,GBP,CC-IT-550,PO-74743,r.okafor
+INV-20011,22.04.2025,V-1009,Stellar Facilities Mgmt,Equipment maintenance,89960.19,EUR,CC-OPS-330,PO-76932,l.chen
+INV-20119,02-21-2025,V-1007,Quanta Cloud Services,Facilities services,61045.65,EUR,CC-COM-440,PO-76653,j.smith
+INV-20118,04-22-2025,V-1010,Crown Travel Partners,Q2 consulting services,80068.69,GBP,CC-IT-550,,m.garcia
+INV-20112,19/10/2025,,PharmaPrint Studios,Conference & travel,50383.39,USD,CC-FIN-100,PO-71858,r.okafor
+INV-20058,2025-10-08,V-1009,Stellar Facilities Mgmt,Software licence renewal,43934.49,EUR,CC-RND-210,PO-74781,
+INV-20049,2025-11-03,V-1002,ClinSupply Iberia S.L.,Equipment maintenance,14566.75,GBP,CC-IT-550,PO-71940,m.garcia
+INV-20115,26/08/2025,V-1009,Stellar Facilities Mgmt,Lab consumables order,58204.94,EUR,CC-OPS-330,PO-77842,a.kowalski
+INV-20048,28.06.2025,V-1005,Helix Consulting AG,Statistical analysis support,9907.36,EUR,CC-FIN-100,PO-77216,a.kowalski
+INV-20054,03-27-2025,V-1004,MedPack Logistics BV,Facilities services,54819.74,EUR,CC-FIN-100,PO-74557,l.chen
+INV-20124,05-18-2025,V-1010,Crown Travel Partners,Facilities services,7152.28,GBP,CC-IT-550,PO-71946,l.chen
+INV-20094,08.04.2025,V-1002,ClinSupply Iberia S.L.,Marketing materials,94145.29,GBP,CC-IT-550,,l.chen
+INV-20083,2025-05-28,V-1010,Crown Travel Partners,Equipment maintenance,57924.9,eur,CC-COM-440,PO-75062,m.garcia
+INV-20127,2025-09-28,V-1010,Crown Travel Partners,Statistical analysis support,56778.97,EUR,CC-COM-440,PO-70841,l.chen
+INV-20133,18/04/2025,V-1002,ClinSupply Iberia S.L.,Facilities services,38762.96,USD,CC-IT-550,PO-74706,r.okafor
+INV-20099,06-08-2025,V-1008,BioReagent Direct,Logistics & freight,91737.87,USD,CC-IT-550,PO-79345,a.kowalski
+INV-20047,09-19-2025,,BioReagent Direct,Equipment maintenance,93152.02,EUR,CC-IT-550,PO-74952,j.smith
+INV-20105,2025-07-17,V-1002,  CLINSUPPLY IBERIA S.L. ,Q3 consulting services,37202.82,USD,CC-FIN-100,PO-76116,r.okafor
+INV-20074,15.07.2025,V1001,Labtech Solutions GmbH,Lab consumables order,90311.64,EUR,CC-COM-440,PO-75876,r.okafor
+INV-20009,03-24-2025,V-1008,BioReagent Direct,Marketing materials,92334.43,EUR,CC-RND-210,PO-74889,m.garcia
+INV-20121,09.10.2025,V-1004,MedPack Logistics BV,Q4 consulting services,23687.67,EUR,CC-IT-550,PO-76850,a.kowalski
+INV-20018,2025-01-03,V-1001,Labtech Solutions GmbH,Cloud hosting,64203.65,EUR,CC-IT-550,PO-79333,m.garcia
+INV-20016,06.01.2025,,Labtech Solutions GmbH,Cloud hosting,46228.49,EUR,CC-OPS-330,,m.garcia
+INV-20017,10-07-2025,V1007,Quanta Cloud Services,Statistical analysis support,20822.4,EUR,CC-RND-210,PO-75138,r.okafor
+INV-20089,2025-07-14,V-1008,BioReagent Direct,Cloud hosting,23251.27,GBP,CC-FIN-100,,l.chen
+INV-20109,20/02/2025,V-1007,Quanta Cloud Services,Lab consumables order,51901.88,EUR,CC-OPS-330,PO-74843,m.garcia
+INV-20012,17.08.2025,V-1007,Quanta Cloud Services,Lab consumables order,"11,653.62",EUR,CC-FIN-100,,a.kowalski
+INV-20019,08-07-2025,V-1010,Crown Travel Partners,Software licence renewal,22812.2,USD,CC-IT-550,PO-77491,r.okafor
+INV-20056,04.08.2025,V-1006,PharmaPrint Studios,Marketing materials,82190.82,EUR,CC-FIN-100,PO-73073,
+INV-20001,09/03/2025,V1002,ClinSupply Iberia S.L.,Lab consumables order,"21,344.84",eur,CC-IT-550,PO-78935,r.okafor
+INV-20066,04-15-2025,V-1009,Stellar Facilities Mgmt,Cloud hosting,93829.13,EUR,CC-IT-550,PO-74949,r.okafor
+INV-20102,02-04-2025,V-1004,MedPack Logistics BV,Q1 consulting services,75218.71,EUR,CC-FIN-100,PO-77740,a.kowalski
+INV-20006,03/11/2025,V-1006,PharmaPrint Studios,Conference & travel,86763.57,GBP,CC-IT-550,PO-76482,j.smith
+INV-20079,04-05-2025,V-1006,PharmaPrint Studios,Marketing materials,59377.78,GBP,CC-FIN-100,PO-79787,r.okafor

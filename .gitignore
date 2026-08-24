@@ -1,4 +1,8 @@
-data/
+# Generated pipeline outputs — not source files
+data/spend_intelligence.duckdb
+data/quality_report.md
+data/quality_report.json
+
 .DS_Store
 *.pyc
 __pycache__/

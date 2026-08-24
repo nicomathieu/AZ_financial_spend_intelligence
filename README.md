@@ -22,7 +22,7 @@ uv run python -m pipeline.pipeline
 uv run uvicorn backend.main:app --reload
 
 # Start frontend
-cd frontend && npm install && npm start
+cd frontend && npm install && npm run dev
 ```
 
 > **Quality report** is written automatically to `data/quality_report.md` and `data/quality_report.json` on every pipeline run.
@@ -121,7 +121,7 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 ### Known limitations
 
 - **`APPROVAL_LEVEL_VIOLATION` is indicative only** — role mapping uses a mock `approver_roles.json`. Inferring roles from observed invoice behaviour would be circular. Production fix: live Azure AD lookup.
-- **`AuditEntry(frozen=True)` protects immutability during the Python pipeline run only.** Once written to DuckDB, a direct `UPDATE` on `audit_log` is possible. Production fix: append-only table permissions or S3 Object Lock.
+- **`AuditEntry(frozen=True)` protects immutability during the Python pipeline run only.** `audit_log` is append-only in the pipeline (never dropped between runs), but a direct `UPDATE` at the DuckDB level remains possible. Production fix: append-only table permissions or S3 Object Lock.
 - **`invoice_date` stored as `VARCHAR`** — SQL agent occasionally generates `EXTRACT(YEAR FROM ...)`, which fails. Mitigated via a system prompt instruction. Production fix: store as `DATE` type in `_write_to_db`.
 - **Fuzzy match threshold 0.7** validated on the happy path only. Production fix: calibrate using a labelled test set + human review queue for matches 0.7–0.9.
 - **Embedder uses TF-IDF fallback** — `sentence-transformers` blocked by AZ Zscaler SSL proxy at startup. Production fix: Azure OpenAI embeddings via the ARI gateway for data residency compliance.

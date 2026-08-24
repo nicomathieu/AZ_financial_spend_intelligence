@@ -1,0 +1,11 @@
+vendor_id,vendor_name,country,category,status
+V-1001,Labtech Solutions GmbH,Germany,Lab Equipment,ACTIVE
+V-1002,ClinSupply Iberia S.L.,Spain,Clinical Supplies,ACTIVE
+V-1003,DataBridge Analytics Ltd,UK,IT Services,ACTIVE
+V-1004,MedPack Logistics BV,Netherlands,Logistics,ACTIVE
+V-1005,Helix Consulting AG,Switzerland,Consulting,ACTIVE
+V-1006,PharmaPrint Studios,Spain,Marketing Services,INACTIVE
+V-1007,Quanta Cloud Services,Ireland,IT Services,ACTIVE
+V-1008,BioReagent Direct,France,Lab Consumables,ACTIVE
+V-1009,Stellar Facilities Mgmt,Spain,Facilities,ACTIVE
+V-1010,Crown Travel Partners,UK,Travel,ON_HOLD
