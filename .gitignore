@@ -3,6 +3,11 @@ data/spend_intelligence.duckdb
 data/quality_report.md
 data/quality_report.json
 
+# Personal prep — not part of the submission
+docs/oral_prep.md
+docs/oral_prep.docx
+docs/oral_prep.pdf
+
 .DS_Store
 *.pyc
 __pycache__/
