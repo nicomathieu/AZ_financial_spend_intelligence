@@ -33,6 +33,13 @@ Rules:
 
 IMPORTANT: invoices_enriched already contains vendor_status, vendor_country, vendor_category from the vendor master via a pre-built LEFT JOIN. Never join invoices_enriched to vendors manually — it creates ambiguous column references. Always use invoices_enriched.vendor_status directly.
 
+IMPORTANT: When joining invoices_enriched with compliance_flags, ALWAYS use table aliases and qualify every column reference — both tables have invoice_number and row_id. Example:
+  SELECT i.invoice_number, i.vendor_name_normalized, i.amount, i.currency, cf.flag_type
+  FROM invoices_enriched i
+  JOIN compliance_flags cf ON i.invoice_number = cf.invoice_number
+  WHERE cf.flag_type = 'NO_PO' AND i.quarantined = false
+  LIMIT 100
+
 Date filtering: invoice_date is stored as a VARCHAR string in ISO format (YYYY-MM-DD). To filter by year use: invoice_date LIKE '2025%' or CAST(invoice_date AS DATE). Never use EXTRACT(YEAR FROM invoice_date) directly on a VARCHAR column.
 """
 
