@@ -12,7 +12,7 @@ router = APIRouter()
 
 class FlagSummary(BaseModel):
     count: int
-    total_amount: Optional[float]
+    amounts_by_currency: dict[str, float]
     indicative_only: bool
 
 
@@ -41,26 +41,31 @@ def get_quality_report(db: duckdb.DuckDBPyConnection = Depends(get_db)):
 
     run_id, run_timestamp, total_invoices, clean_rows, quarantined_rows, audit_entries, reference_date = run
 
-    # Flag summary joined with invoice amounts
+    # Flag summary grouped by flag_type AND currency — never sum across currencies
     flags_rows = db.execute("""
         SELECT
             cf.flag_type,
+            ic.currency,
             COUNT(*)                                AS count,
-            SUM(ic.amount)                          AS total_amount,
+            SUM(ic.amount)                          AS currency_amount,
             MAX(cf.indicative_only::INT)::BOOL      AS indicative_only
         FROM compliance_flags cf
         JOIN invoices_clean ic ON cf.row_id = ic.row_id
-        GROUP BY cf.flag_type
-        ORDER BY count DESC
+        GROUP BY cf.flag_type, ic.currency
+        ORDER BY cf.flag_type, ic.currency
     """).fetchall()
 
+    flag_acc: dict[str, dict] = {}
+    for flag_type, currency, count, currency_amount, indicative_only in flags_rows:
+        if flag_type not in flag_acc:
+            flag_acc[flag_type] = {"count": 0, "amounts_by_currency": {}, "indicative_only": False}
+        flag_acc[flag_type]["count"] += count
+        flag_acc[flag_type]["amounts_by_currency"][currency] = round(currency_amount, 2)
+        flag_acc[flag_type]["indicative_only"] = indicative_only or flag_acc[flag_type]["indicative_only"]
+
     flags: dict[str, FlagSummary] = {
-        flag_type: FlagSummary(
-            count=count,
-            total_amount=total_amount,
-            indicative_only=indicative_only,
-        )
-        for flag_type, count, total_amount, indicative_only in flags_rows
+        flag_type: FlagSummary(**data)
+        for flag_type, data in flag_acc.items()
     }
 
     # Top 10 flagged invoices by EUR amount (all quarantine states for completeness)

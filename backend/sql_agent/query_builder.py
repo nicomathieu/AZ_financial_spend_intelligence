@@ -10,9 +10,9 @@ Schema:
   currency, cost_center, po_number, approved_by, quarantined, quarantine_reason,
   is_credit_note, vendor_master_name, vendor_country, vendor_category, vendor_status
 - compliance_flags: row_id, invoice_number, flag_type, detail, indicative_only
-  flag_type values: NO_PO, PENDING_APPROVAL, OVERDUE_APPROVAL, BLOCKED_VENDOR,
-  VENDOR_ON_HOLD, APPROVAL_LEVEL_VIOLATION, CREDIT_NOTE, POTENTIAL_DUPLICATE,
-  LOGICAL_DUPLICATE_CANDIDATE
+  flag_type values: NO_PO, PENDING_APPROVAL, OVERDUE_APPROVAL (indicative_only — business heuristic),
+  BLOCKED_VENDOR, VENDOR_ON_HOLD, APPROVAL_LEVEL_VIOLATION (indicative_only — mock IAM source),
+  CREDIT_NOTE, POTENTIAL_DUPLICATE, LOGICAL_DUPLICATE_CANDIDATE
 - vendors: vendor_id, vendor_name, country, category, status
 
 Allowed tables (query ONLY these):

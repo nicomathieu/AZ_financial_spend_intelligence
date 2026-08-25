@@ -112,7 +112,15 @@ class PendingApprovalRule:
 
 
 class OverdueApprovalRule:
-    """§3.1 — unapproved invoice older than 30 days (relative to reference_date)."""
+    """Business heuristic — unapproved invoice older than 30 days.
+
+    The policy (§3.1) only states that a missing approver must be held; it does
+    not define a 30-day escalation threshold. The 30-day window is a common
+    operational convention, not a policy requirement. Flags are therefore
+    indicative_only=True and should never be treated as confirmed violations.
+    In production, this threshold would come from a configurable SLA parameter,
+    not be hardcoded here.
+    """
 
     def check(self, invoice, vendor_map, approver_roles, all_invoices, reference_date):
         if invoice.quarantined or invoice.approved_by:
@@ -125,8 +133,10 @@ class OverdueApprovalRule:
                 flag_type=FlagType.OVERDUE_APPROVAL,
                 detail=(
                     f"No approver + invoice is {age_days} days old "
-                    f"(reference_date={reference_date}) (§3.1)"
+                    f"(reference_date={reference_date}) — "
+                    "business heuristic, 30-day threshold not in policy"
                 ),
+                indicative_only=True,
             )]
         return []
 
