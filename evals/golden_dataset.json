@@ -5,7 +5,7 @@
     "expected_answer_contains": ["21"],
     "expected_row_count": 21,
     "policy_section": null,
-    "note": "KNOWN FAILURE — SQL agent returns 14 (EUR only). Correct behaviour: group by currency (14 EUR + 5 GBP + 2 USD) with a note that cross-currency comparison requires FX rates. Nominal count of 21 encodes an incorrect assumption. Production fix: update SQL system prompt to split by currency when a EUR threshold is applied."
+    "note": "KNOWN FAILURE — SQL agent returns 14 (EUR only). Correct behaviour: group by currency (14 EUR + 3 GBP + 4 USD = 21 nominal) with a note that cross-currency comparison requires ECB FX rates. Nominal count of 21 encodes an incorrect assumption — a GBP/USD invoice at nominal ≥1,000 may be below EUR 1,000 at spot rate. Production fix: update SQL system prompt to split by currency when a EUR threshold is applied."
   },
   {
     "id": "q02",

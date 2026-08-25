@@ -188,13 +188,18 @@ class ApprovalLevelViolationRule:
         limit = _ROLE_LIMITS.get(role, float("inf"))
         if abs(invoice.amount) > limit:
             required = _required_role(abs(invoice.amount))
+            currency_note = (
+                "" if invoice.currency == "EUR"
+                else f" (amount in {invoice.currency} — EUR equivalent requires FX conversion to confirm)"
+            )
             return [ComplianceFlag(
                 row_id=invoice.row_id,
                 invoice_number=invoice.invoice_number,
                 flag_type=FlagType.APPROVAL_LEVEL_VIOLATION,
                 detail=(
-                    f"Amount {invoice.amount:.2f} requires '{required}' "
-                    f"but '{invoice.approved_by}' (role: {role}, limit: {limit:.0f}) approved (§3)"
+                    f"Amount {invoice.amount:.2f} {invoice.currency} requires '{required}' "
+                    f"but '{invoice.approved_by}' (role: {role}, limit: {limit:.0f} EUR) approved (§3)"
+                    f"{currency_note}"
                 ),
                 indicative_only=True,
             )]
@@ -231,6 +236,7 @@ class LogicalDuplicateRule:
                 and inv.invoice_number != invoice.invoice_number
                 and inv.vendor_id == invoice.vendor_id
                 and inv.amount == invoice.amount
+                and inv.currency == invoice.currency
                 and abs((inv.invoice_date - invoice.invoice_date).days) <= 7
             )
         ]

@@ -135,7 +135,7 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 - **Authentication / authorisation** — out of scope per brief; production path is Azure AD SSO with role-based access (analyst / controller / auditor)
 - **CI/CD and deployment** — out of scope per brief; runs locally only. Production gate: pipeline eval metrics (quarantine rate, flag precision/recall) before any merge
 - **Production vector DB** — 15 policy chunks do not warrant Pinecone or ChromaDB; the right trigger is >1,000 chunks or multi-document retrieval
-- **Full evaluation harness** — evaluation strategy is described in §4 and is the correct production design; not implemented in the prototype
+- **Full evaluation harness** — a 10-question golden dataset with a scoring script is implemented (`evals/score.py`, 9/10 passing). The production harness described in §4 (faithfulness scoring, retrieval Hit@3, LLM-as-judge) is not implemented
 - **Pixel-perfect styling** — functionality takes precedence over aesthetics for an internal finance tool
 - **dbt lineage** — would add value for the data warehouse transformation layer in production; the Python pipeline handles complex imperative data ingestion (fuzzy matching, multi-step quarantine logic) which dbt's declarative SQL model cannot replace
 
@@ -168,16 +168,16 @@ Compliance flag accuracy
 | SQL accuracy | Does generated SQL return correct rows on known data? |
 | Answer relevance | Is the answer responsive to the question asked? |
 
-**Current results: 8/10 passed (80%) — CI gate: PASS (threshold 70%)**
+**Current results: 9/10 passed (90%) — CI gate: PASS (threshold 70%)**
 
 Run: `python evals/score.py`
 
 | Question | Status | Notes |
 |---|---|---|
-| q01 NO_PO count | ❌ | SQL agent filters EUR only — misses GBP/USD invoices (got 14, expected 21) |
+| q01 NO_PO count | ❌ | SQL agent filters EUR only — returns 14 (EUR) vs 21 total (14 EUR + 3 GBP + 4 USD). Correct behaviour: group by currency; nominal cross-currency comparison requires ECB FX rates |
 | q02 Non-ACTIVE vendor spend | ✅ | |
 | q03 Approval threshold §3 | ✅ | |
-| q04 Duplicate invoices | ❌ | GROUP BY deduplicates pairs — returns 5 instead of 10 individual flagged rows |
+| q04 Duplicate invoices | ✅ | |
 | q05 Payment terms §5.2 | ✅ | |
 | q06 PENDING_APPROVAL count | ✅ | |
 | q07 ON_HOLD handling §4.1 | ✅ | |
@@ -216,9 +216,9 @@ Production fix for q01/q04: additional SQL system prompt instructions on multi-c
 - Real-time streaming for time-sensitive compliance alerts
 
 ### Auditability & SOX §8.2
-- `pipeline_log` and `audit_log` tables already implement full transformation lineage
-- All LLM calls logged (prompt + response + timestamp) for 10-year retention per §8.1
-- Immutable audit trail via append-only log table
+- `pipeline_log` and `audit_log` implement transformation lineage at pipeline level — each audit entry carries a `run_id` so the quality report filters on the current run only
+- LLM call logging (prompt + response + tokens) not yet implemented — production path: structured log to append-only store, retained per §8.1 schedule
+- `audit_log` is append-only in the pipeline code; a direct DuckDB `UPDATE` remains possible — production fix: append-only DB permissions or S3 Object Lock
 
 ### Monitoring
 - CloudWatch for pipeline health (run duration, quarantine rate, flag counts)
@@ -226,7 +226,7 @@ Production fix for q01/q04: additional SQL system prompt instructions on multi-c
 - Alert on SQL error rate spike — potential indicator of schema drift
 
 ### Cost model
-- ~$0.002 / query at current volume (Haiku for embeddings, Sonnet for generation)
+- ~$0.002 / query at current volume (TF-IDF for embeddings — fallback due to SSL proxy; production: Azure OpenAI `text-embedding-3-small`. Sonnet for generation)
 - Policy embeddings cached at startup — static document, embed once, reuse
 - Acceptable for an internal finance tool at ~50 queries/day
 
@@ -245,7 +245,7 @@ Production fix for q01/q04: additional SQL system prompt instructions on multi-c
 **What I'd do next with more time:**
 
 1. Implement real approval-level validation with IAM/Azure AD integration — replacing `approver_roles.json` with a live lookup
-2. Add eval harness with golden dataset (10 Q&A pairs) as a CI gate before any RAG change
+2. SQL AST table allowlist via `sqlglot` — programmatic enforcement that generated queries only access `invoices_enriched`, `compliance_flags`, `vendors`
 3. Guardrails — refuse or escalate when a question requires data unavailable in the current dataset
 4. Incremental pipeline — idempotent ingestion of late-arriving invoices without full reprocessing
 5. Production auth — Azure AD SSO with auditor / controller / analyst roles

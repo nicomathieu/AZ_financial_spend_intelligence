@@ -1,0 +1,174 @@
+{
+  "generated_at": "2026-08-25T10:57:03.710556+00:00",
+  "run_id": "0e5b9a8c-57d9-4caa-8361-afc813af0e58",
+  "reference_date": "2025-12-26",
+  "source_file": "data/invoices_2025.csv",
+  "totals": {
+    "rows_ingested": 145,
+    "rows_clean": 145,
+    "rows_quarantined": 0,
+    "audit_entries": 169,
+    "compliance_flags_raised": 174
+  },
+  "issue_classes": [
+    {
+      "issue_class": "Mixed / non-ISO date formats",
+      "count": 123,
+      "decision": "Fix",
+      "handling": "Parsed to ISO 8601 using format heuristics (YYYY-MM-DD, DD.MM.YYYY, MM-DD-YYYY, DD/MM/YYYY). Deterministic per format \u2014 no data loss."
+    },
+    {
+      "issue_class": "Ambiguous dates (both parts \u2264 12)",
+      "count": 54,
+      "decision": "Flag",
+      "handling": "Parsed with assumed convention; date_ambiguous=true set in invoices_clean. Affects OVERDUE_APPROVAL flags \u2014 human review recommended for flagged rows."
+    },
+    {
+      "issue_class": "Lowercase / mixed-case currency codes",
+      "count": 18,
+      "decision": "Fix",
+      "handling": "Uppercased to ISO 4217 standard (eur \u2192 EUR). No ambiguity \u2014 purely a casing artefact from the AP export."
+    },
+    {
+      "issue_class": "Malformed vendor IDs (missing dash)",
+      "count": 10,
+      "decision": "Fix",
+      "handling": "Regex normalisation: V1002 \u2192 V-1002. Pattern V-XXXX is unambiguous \u2014 no heuristic involved."
+    },
+    {
+      "issue_class": "Missing vendor IDs resolved via name match",
+      "count": 4,
+      "decision": "Fix",
+      "handling": "Fuzzy match on vendor_name vs vendor master (threshold 0.7, casefold). Match score and method logged in audit_log. Production path: matches 0.7\u20130.9 should go to human review queue."
+    },
+    {
+      "issue_class": "Quoted amounts / thousand-separator commas",
+      "count": 4,
+      "decision": "Fix",
+      "handling": "Stripped surrounding quotes and comma separators. AP export artefact \u2014 format is deterministic and reversible."
+    },
+    {
+      "issue_class": "Vendor names with excess whitespace",
+      "count": 10,
+      "decision": "Fix",
+      "handling": "Strip + whitespace collapse only. Canonical commercial casing preserved from vendor master \u2014 vendor name is never modified beyond removing leading/trailing whitespace."
+    },
+    {
+      "issue_class": "Rows with unrecoverable errors",
+      "count": 0,
+      "decision": "Quarantine",
+      "handling": "Retained in invoices_clean with quarantined=true and quarantine_reason populated. Never dropped silently \u2014 remains visible in invoices_enriched via LEFT JOIN."
+    }
+  ],
+  "dq_fixes": {
+    "dates_parsed_to_iso": 123,
+    "dates_ambiguous_flagged": 54,
+    "currencies_uppercased": 18,
+    "vendor_ids_dash_inserted": 10,
+    "vendor_names_normalized": 10,
+    "amounts_unquoted": 4,
+    "vendor_ids_resolved_via_fuzzy_match": 4,
+    "rows_quarantined": 0
+  },
+  "spend_by_currency": [
+    {
+      "currency": "EUR",
+      "invoice_count": 91,
+      "total_amount": 4705163.89,
+      "type": "invoice"
+    },
+    {
+      "currency": "GBP",
+      "invoice_count": 29,
+      "total_amount": 1228437.15,
+      "type": "invoice"
+    },
+    {
+      "currency": "USD",
+      "invoice_count": 23,
+      "total_amount": 1179980.08,
+      "type": "invoice"
+    }
+  ],
+  "credit_notes_by_currency": [
+    {
+      "currency": "EUR",
+      "invoice_count": 1,
+      "total_amount": -52749.39,
+      "type": "credit_note"
+    },
+    {
+      "currency": "USD",
+      "invoice_count": 1,
+      "total_amount": -29534.55,
+      "type": "credit_note"
+    }
+  ],
+  "compliance_summary": {
+    "APPROVAL_LEVEL_VIOLATION": 62,
+    "PENDING_APPROVAL": 26,
+    "OVERDUE_APPROVAL": 24,
+    "NO_PO": 21,
+    "BLOCKED_VENDOR": 17,
+    "VENDOR_ON_HOLD": 12,
+    "POTENTIAL_DUPLICATE": 10,
+    "CREDIT_NOTE": 2
+  },
+  "no_po_by_currency": {
+    "EUR": 14,
+    "USD": 4,
+    "GBP": 3
+  },
+  "confirmed_duplicate_pairs": [
+    {
+      "invoice_number": "INV-20107",
+      "vendor_id": "V-1001",
+      "amount": 84170.64,
+      "currency": "EUR",
+      "occurrences": 2
+    },
+    {
+      "invoice_number": "INV-20119",
+      "vendor_id": "V-1007",
+      "amount": 61045.65,
+      "currency": "EUR",
+      "occurrences": 2
+    },
+    {
+      "invoice_number": "INV-20117",
+      "vendor_id": "V-1005",
+      "amount": 32989.91,
+      "currency": "GBP",
+      "occurrences": 2
+    },
+    {
+      "invoice_number": "INV-20015",
+      "vendor_id": "V-1004",
+      "amount": 13472.09,
+      "currency": "EUR",
+      "occurrences": 2
+    },
+    {
+      "invoice_number": "INV-20132",
+      "vendor_id": "V-1004",
+      "amount": 13196.22,
+      "currency": "GBP",
+      "occurrences": 2
+    }
+  ],
+  "indicative_only_flags": [
+    "APPROVAL_LEVEL_VIOLATION"
+  ],
+  "quarantined_rows": [],
+  "notes": [
+    "\u26a0\ufe0f APPROVAL_LEVEL_VIOLATION (62 flags, highest count) are INDICATIVE ONLY \u2014 role mapping uses a mock IAM config. These figures must not be treated as confirmed violations until an authoritative Azure AD integration is in place.",
+    "\u26a0\ufe0f OVERDUE_APPROVAL reference_date=2025-12-26 is the max invoice_date in the dataset, NOT the actual current date. This report is not an operational snapshot \u2014 actual overdue delays are significantly underestimated. Production fix: pass the accounting period close date as the reference parameter.",
+    "DATE_AMBIGUOUS (54 rows): format assumed hyphens\u2192MM-DD-YYYY, slashes\u2192DD/MM/YYYY. For a company with primarily European vendors this assumption may be inverted. Production fix: cross-reference with vendor country from vendor_master to resolve ambiguity. Affects OVERDUE_APPROVAL flags for ambiguous rows.",
+    "POTENTIAL_DUPLICATE flags represent confirmed duplicate invoice_numbers (identical in every field) \u2014 these are likely duplicate payments, not merely candidates for review. See confirmed duplicate pairs table.",
+    "NO_PO non-EUR rows flagged for controller review \u2014 EUR equivalent requires ECB FX rate to confirm \u00a72.1 threshold breach definitively.",
+    "Spend table shows 143 positive invoices + 2 credit notes = 145 clean rows total. Credit notes are reported separately to avoid distorting the spend figures.",
+    "BLOCKED_VENDOR (INACTIVE) and VENDOR_ON_HOLD (ON_HOLD) receive distinct flags \u2014 policy \u00a74.1 prescribes different remediation paths for each status.",
+    "Out-of-scope rules not implemented: \u00a77 self-approval (no requester field in dataset), \u00a76.1 credit note age/matching (no originating invoice ref), \u00a72.3/\u00a79 blanket PO and emergency exceptions (no Exception Register in dataset).",
+    "Quarantined rows are retained in invoices_clean with quarantined=true \u2014 data is never dropped silently."
+  ]
+}
