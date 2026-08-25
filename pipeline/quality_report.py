@@ -52,7 +52,7 @@ ISSUE_CLASSES = [
         "issue_class": "Vendor names with excess whitespace",
         "count_key": "vendor_names_normalized",
         "decision": "Fix",
-        "handling": "Strip + whitespace collapse only. Canonical commercial casing preserved from vendor master — .title() deliberately avoided to prevent name corruption.",
+        "handling": "Strip + whitespace collapse only. Canonical commercial casing preserved from vendor master — vendor name is never modified beyond removing leading/trailing whitespace.",
     },
     {
         "issue_class": "Rows with unrecoverable errors",
