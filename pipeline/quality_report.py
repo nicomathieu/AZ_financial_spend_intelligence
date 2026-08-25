@@ -131,6 +131,25 @@ def generate_report(
         ).fetchall()
     ]
 
+    # Confirmed duplicate pairs (same invoice_number — not "potential")
+    confirmed_duplicate_pairs = [
+        {
+            "invoice_number": row[0],
+            "vendor_id": row[1],
+            "amount": round(row[2], 2),
+            "currency": row[3],
+            "occurrences": row[4],
+        }
+        for row in conn.execute("""
+            SELECT ic.invoice_number, ic.vendor_id, ic.amount, ic.currency, COUNT(*) AS occurrences
+            FROM compliance_flags cf
+            JOIN invoices_clean ic ON cf.row_id = ic.row_id
+            WHERE cf.flag_type = 'POTENTIAL_DUPLICATE'
+            GROUP BY ic.invoice_number, ic.vendor_id, ic.amount, ic.currency
+            ORDER BY ic.amount DESC
+        """).fetchall()
+    ]
+
     # NO_PO split by currency — EUR is a definitive threshold breach;
     # non-EUR requires FX conversion to confirm §2.1 compliance.
     no_po_by_currency = dict(
@@ -146,14 +165,26 @@ def generate_report(
 
     # Spend summary by currency — cross-currency aggregation requires ECB
     # FX rates; totals are intentionally reported per currency, not summed.
+    # Positive invoices and credit notes (negative amounts) are reported
+    # separately so the row counts reconcile to the 145 clean rows total.
     spend_by_currency = [
-        {"currency": row[0], "invoice_count": row[1], "total_amount": round(row[2], 2)}
+        {"currency": row[0], "invoice_count": row[1], "total_amount": round(row[2], 2), "type": "invoice"}
         for row in conn.execute("""
             SELECT currency, COUNT(*) AS invoice_count, SUM(amount) AS total_amount
             FROM invoices_clean
             WHERE quarantined = false AND amount > 0
             GROUP BY currency
             ORDER BY total_amount DESC
+        """).fetchall()
+    ]
+    credit_notes_by_currency = [
+        {"currency": row[0], "invoice_count": row[1], "total_amount": round(row[2], 2), "type": "credit_note"}
+        for row in conn.execute("""
+            SELECT currency, COUNT(*) AS invoice_count, SUM(amount) AS total_amount
+            FROM invoices_clean
+            WHERE quarantined = false AND amount < 0
+            GROUP BY currency
+            ORDER BY total_amount ASC
         """).fetchall()
     ]
 
@@ -175,22 +206,26 @@ def generate_report(
             "audit_entries":        audit_count,
             "compliance_flags_raised": flag_count,
         },
-        "issue_classes":      issue_classes,
-        "dq_fixes":           dq_fixes,
-        "spend_by_currency":  spend_by_currency,
-        "compliance_summary": flag_counts,
-        "no_po_by_currency":  no_po_by_currency,
-        "indicative_only_flags": indicative_flags,
+        "issue_classes":           issue_classes,
+        "dq_fixes":                dq_fixes,
+        "spend_by_currency":       spend_by_currency,
+        "credit_notes_by_currency": credit_notes_by_currency,
+        "compliance_summary":      flag_counts,
+        "no_po_by_currency":       no_po_by_currency,
+        "confirmed_duplicate_pairs": confirmed_duplicate_pairs,
+        "indicative_only_flags":   indicative_flags,
         "quarantined_rows": [
             {"invoice_number": r[0], "reason": r[1]} for r in quarantine_detail
         ],
         "notes": [
-            "APPROVAL_LEVEL_VIOLATION flags are indicative_only=true — role mapping sourced from approver_roles.json (mock IAM). Production fix: live Azure AD lookup.",
-            f"OVERDUE_APPROVAL reference_date={reference_date} (= max invoice_date in dataset, deterministic for SOX §8.2 reproducibility).",
-            "DATE_AMBIGUOUS rows used assumed format conventions: hyphens→MM-DD-YYYY, slashes→DD/MM/YYYY. Affects OVERDUE_APPROVAL flags for those rows.",
+            "⚠️ APPROVAL_LEVEL_VIOLATION (62 flags, highest count) are INDICATIVE ONLY — role mapping uses a mock IAM config. These figures must not be treated as confirmed violations until an authoritative Azure AD integration is in place.",
+            f"⚠️ OVERDUE_APPROVAL reference_date={reference_date} is the max invoice_date in the dataset, NOT the actual current date. This report is not an operational snapshot — actual overdue delays are significantly underestimated. Production fix: pass the accounting period close date as the reference parameter.",
+            "DATE_AMBIGUOUS (54 rows): format assumed hyphens→MM-DD-YYYY, slashes→DD/MM/YYYY. For a company with primarily European vendors this assumption may be inverted. Production fix: cross-reference with vendor country from vendor_master to resolve ambiguity. Affects OVERDUE_APPROVAL flags for ambiguous rows.",
+            "POTENTIAL_DUPLICATE flags represent confirmed duplicate invoice_numbers (identical in every field) — these are likely duplicate payments, not merely candidates for review. See confirmed duplicate pairs table.",
             "NO_PO non-EUR rows flagged for controller review — EUR equivalent requires ECB FX rate to confirm §2.1 threshold breach definitively.",
+            "Spend table shows 143 positive invoices + 2 credit notes = 145 clean rows total. Credit notes are reported separately to avoid distorting the spend figures.",
             "BLOCKED_VENDOR (INACTIVE) and VENDOR_ON_HOLD (ON_HOLD) receive distinct flags — policy §4.1 prescribes different remediation paths for each status.",
-            "Spend totals are reported per currency. Cross-currency aggregation without an authoritative FX source would produce a misleading consolidated figure.",
+            "Out-of-scope rules not implemented: §7 self-approval (no requester field in dataset), §6.1 credit note age/matching (no originating invoice ref), §2.3/§9 blanket PO and emergency exceptions (no Exception Register in dataset).",
             "Quarantined rows are retained in invoices_clean with quarantined=true — data is never dropped silently.",
         ],
     }
@@ -239,17 +274,23 @@ def _render_markdown(r: dict) -> str:
         "",
         "> Cross-currency aggregation without an authoritative ECB FX source would produce a misleading total.",
         "> Totals are reported per currency; a finance controller should apply official rates for consolidated reporting.",
+        "> Positive invoices and credit notes are reported separately — counts reconcile to 145 clean rows total.",
         "",
-        "| Currency | Invoices | Total Amount |",
-        "|----------|----------|-------------|",
+        "| Currency | Invoices | Total Amount | Type |",
+        "|----------|----------|-------------|------|",
     ]
     for s in r["spend_by_currency"]:
-        lines.append(f"| {s['currency']} | {s['invoice_count']} | {s['total_amount']:,.2f} |")
+        lines.append(f"| {s['currency']} | {s['invoice_count']} | {s['total_amount']:,.2f} | Invoice |")
+    for s in r.get("credit_notes_by_currency", []):
+        lines.append(f"| {s['currency']} | {s['invoice_count']} | {s['total_amount']:,.2f} | Credit note |")
 
     # ── Compliance flags ───────────────────────────────────────────────────────
     lines += [
         "",
         "## Compliance Flags",
+        "",
+        "> ⚠️ **Reliability warning:** `APPROVAL_LEVEL_VIOLATION` (62 flags, highest count) is based on a mock IAM config.",
+        "> These figures must not be treated as confirmed violations until Azure AD integration is in place.",
         "",
         "| Flag | Count | Note |",
         "|------|-------|------|",
@@ -270,6 +311,21 @@ def _render_markdown(r: dict) -> str:
         for currency, count in r["no_po_by_currency"].items():
             status = "Definitive §2.1 breach" if currency == "EUR" else "Requires ECB FX rate to confirm §2.1 threshold"
             lines.append(f"| {currency} | {count} | {status} |")
+
+    # ── Confirmed duplicate pairs ──────────────────────────────────────────────
+    if r.get("confirmed_duplicate_pairs"):
+        lines += [
+            "",
+            "### POTENTIAL_DUPLICATE — confirmed pairs",
+            "",
+            "> These are not ambiguous candidates: each pair shares an identical invoice_number, vendor, amount, date, and currency.",
+            "> They represent likely duplicate payments and should be escalated for immediate review.",
+            "",
+            "| Invoice Number | Vendor | Amount | Currency | Occurrences |",
+            "|----------------|--------|--------|----------|-------------|",
+        ]
+        for p in r["confirmed_duplicate_pairs"]:
+            lines.append(f"| {p['invoice_number']} | {p['vendor_id']} | {p['amount']:,.2f} | {p['currency']} | {p['occurrences']} |")
 
     # ── Quarantined rows ───────────────────────────────────────────────────────
     if r["quarantined_rows"]:
