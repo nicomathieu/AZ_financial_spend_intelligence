@@ -9,9 +9,10 @@ from pathlib import Path
 import duckdb
 
 
-def _count_action(conn: duckdb.DuckDBPyConnection, keyword: str) -> int:
+def _count_action(conn: duckdb.DuckDBPyConnection, keyword: str, run_id: str) -> int:
     return conn.execute(
-        "SELECT COUNT(*) FROM audit_log WHERE action LIKE ?", [f"%{keyword}%"]
+        "SELECT COUNT(*) FROM audit_log WHERE action LIKE ? AND run_id = ?",
+        [f"%{keyword}%", run_id],
     ).fetchone()[0]
 
 
@@ -21,10 +22,19 @@ def generate_report(
 ) -> dict:
     conn = duckdb.connect(db_path, read_only=True)
 
+    # Fetch run_id first — all audit_log queries filter on it to report
+    # only the current run, not the cumulative append-only history.
+    run_info = conn.execute(
+        "SELECT run_id, reference_date, run_timestamp, source_file FROM pipeline_log ORDER BY run_timestamp DESC LIMIT 1"
+    ).fetchone()
+    current_run_id = str(run_info[0]) if run_info else ""
+    reference_date = str(run_info[1]) if run_info else "N/A"
+    run_timestamp = str(run_info[2]) if run_info else "N/A"
+    source_file = str(run_info[3]) if run_info else "N/A"
+
     total = conn.execute("SELECT COUNT(*) FROM invoices_clean").fetchone()[0]
     quarantined = conn.execute("SELECT COUNT(*) FROM invoices_clean WHERE quarantined = true").fetchone()[0]
     clean = total - quarantined
-    audit_count = conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0]
     flag_count = conn.execute("SELECT COUNT(*) FROM compliance_flags").fetchone()[0]
 
     ambiguous_dates = conn.execute(
@@ -32,13 +42,13 @@ def generate_report(
     ).fetchone()[0]
 
     dq_fixes = {
-        "dates_parsed_to_iso": _count_action(conn, "→ ISO"),
+        "dates_parsed_to_iso": _count_action(conn, "→ ISO", current_run_id),
         "dates_ambiguous_flagged": ambiguous_dates,
-        "currencies_uppercased": _count_action(conn, "Uppercased currency"),
-        "vendor_ids_dash_inserted": _count_action(conn, "Inserted dash"),
-        "vendor_names_normalized": _count_action(conn, "Normalized vendor name"),
-        "amounts_unquoted": _count_action(conn, "Stripped quotes"),
-        "vendor_ids_resolved_via_fuzzy_match": _count_action(conn, "fuzzy match"),
+        "currencies_uppercased": _count_action(conn, "Uppercased currency", current_run_id),
+        "vendor_ids_dash_inserted": _count_action(conn, "Inserted dash", current_run_id),
+        "vendor_names_normalized": _count_action(conn, "Normalized vendor name", current_run_id),
+        "amounts_unquoted": _count_action(conn, "Stripped quotes", current_run_id),
+        "vendor_ids_resolved_via_fuzzy_match": _count_action(conn, "fuzzy match", current_run_id),
         "rows_quarantined": quarantined,
     }
 
@@ -54,12 +64,9 @@ def generate_report(
         ).fetchall()
     ]
 
-    run_info = conn.execute(
-        "SELECT reference_date, run_timestamp, source_file FROM pipeline_log ORDER BY run_timestamp DESC LIMIT 1"
-    ).fetchone()
-    reference_date = str(run_info[0]) if run_info else "N/A"
-    run_timestamp = str(run_info[1]) if run_info else "N/A"
-    source_file = str(run_info[2]) if run_info else "N/A"
+    audit_count = conn.execute(
+        "SELECT COUNT(*) FROM audit_log WHERE run_id = ?", [current_run_id]
+    ).fetchone()[0]
 
     # Quarantine detail
     quarantine_detail = conn.execute(
@@ -70,6 +77,7 @@ def generate_report(
 
     report = {
         "generated_at": run_timestamp,
+        "run_id": current_run_id,
         "reference_date": reference_date,
         "source_file": source_file,
         "totals": {
@@ -106,6 +114,7 @@ def _render_markdown(r: dict) -> str:
         "# Data Quality & Compliance Report",
         "",
         f"**Generated:** {r['generated_at']}  ",
+        f"**Run ID:** {r['run_id']}  ",
         f"**Source file:** {r['source_file']}  ",
         f"**OVERDUE_APPROVAL reference date:** {r['reference_date']}",
         "",

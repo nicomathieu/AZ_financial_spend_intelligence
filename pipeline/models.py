@@ -78,6 +78,7 @@ class AuditEntry(BaseModel):
     run_timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
+    run_id: Optional[str] = None
 
 
 class ComplianceFlag(BaseModel):

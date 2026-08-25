@@ -156,8 +156,9 @@ def _write_to_db(
     ven_df = pd.DataFrame([v.model_dump() for v in vendors])
 
     _EMPTY_AUDIT = {"row_id": [], "invoice_number": [], "field": [],
-                    "original_value": [], "new_value": [], "action": [], "run_timestamp": []}
+                    "original_value": [], "new_value": [], "action": [], "run_timestamp": [], "run_id": []}
     aud_df = pd.DataFrame([a.model_dump() for a in audit_entries]) if audit_entries else pd.DataFrame(_EMPTY_AUDIT)
+    aud_df["run_id"] = run_id
 
     _EMPTY_FLAGS = {"row_id": [], "invoice_number": [], "flag_type": [], "detail": [], "indicative_only": []}
     flags_df = pd.DataFrame([f.model_dump() for f in flags]) if flags else pd.DataFrame(_EMPTY_FLAGS)
@@ -176,6 +177,10 @@ def _write_to_db(
     # transformation history is preserved for SOX §8.2 lineage.
     tables = {row[0] for row in conn.execute("SHOW TABLES").fetchall()}
     if "audit_log" in tables:
+        # Migrate: add run_id column if it doesn't exist yet (schema evolution)
+        cols = {row[0] for row in conn.execute("DESCRIBE audit_log").fetchall()}
+        if "run_id" not in cols:
+            conn.execute("ALTER TABLE audit_log ADD COLUMN run_id VARCHAR")
         conn.execute("INSERT INTO audit_log SELECT * FROM aud_df")
     else:
         conn.execute("CREATE TABLE audit_log AS SELECT * FROM aud_df")
