@@ -1,11 +1,11 @@
 <mxfile host="app.diagrams.net">
   <diagram id="4UNDBTYjqFPRLJAInF6B" name="Page-1">
-    <mxGraphModel dx="1465" dy="775" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3314" dy="879" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Production Architecture&amp;nbsp;" vertex="1">
-          <mxGeometry height="28" width="1355" x="10" y="8" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;fontStyle=1;fontSize=16;align=center;verticalAlign=middle;" value="Production Architecture - 200 users" vertex="1">
+          <mxGeometry height="28" width="1355" x="-30" y="8" as="geometry" />
         </mxCell>
         <mxCell id="bg_input" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;spacingTop=5;fontStyle=1;fontSize=13;opacity=50;" value="INPUT" vertex="1">
           <mxGeometry height="590" width="185" x="10" y="76" as="geometry" />
