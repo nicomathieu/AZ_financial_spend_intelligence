@@ -2,10 +2,11 @@ from __future__ import annotations
 from typing import Optional
 
 import duckdb
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from backend.dependencies import get_db
+from backend.exceptions import NotFoundError
 
 router = APIRouter()
 
@@ -37,7 +38,7 @@ def get_quality_report(db: duckdb.DuckDBPyConnection = Depends(get_db)):
     ).fetchone()
 
     if run is None:
-        raise HTTPException(status_code=404, detail="No pipeline runs found in DB")
+        raise NotFoundError("No pipeline runs found in DB")
 
     run_id, run_timestamp, total_invoices, clean_rows, quarantined_rows, audit_entries, reference_date = run
 

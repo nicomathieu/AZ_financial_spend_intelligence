@@ -13,6 +13,7 @@ try:
 except ImportError:
     pass
 
+from backend.exceptions import APIError, api_error_handler, unhandled_error_handler
 from backend.rag.chunker import chunk_policy
 from backend.rag.embedder import embed_texts, init_embedder
 from backend.dependencies import RAGEngine
@@ -71,6 +72,10 @@ def create_app() -> FastAPI:
     application.include_router(ask.router)
     application.include_router(quality.router)
     application.include_router(invoices.router)
+
+    # All HTTP error translation lives here — routes raise semantic exceptions only
+    application.add_exception_handler(APIError, api_error_handler)
+    application.add_exception_handler(Exception, unhandled_error_handler)
 
     return application
 

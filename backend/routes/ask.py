@@ -5,10 +5,11 @@ from typing import Optional
 
 import litellm
 import duckdb
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from backend.dependencies import get_db, get_rag, RAGEngine
+from backend.exceptions import LLMUnavailableError, ValidationError
 from backend.sql_agent.query_builder import generate_sql
 
 router = APIRouter()
@@ -82,7 +83,7 @@ def ask_question(
 ):
     question = body.question.strip()
     if not question:
-        raise HTTPException(status_code=422, detail="question must not be empty")
+        raise ValidationError("question must not be empty")
 
     # ── 1. Retrieve top-3 policy chunks ─────────────────────────────────────
     policy_chunks = rag.retrieve(question, top_k=3)
@@ -177,10 +178,7 @@ def ask_question(
         )
         answer = llm_response.choices[0].message.content or ""
     except Exception as exc:
-        raise HTTPException(
-            status_code=503,
-            detail=f"LLM call failed: {exc}. Please retry in a few seconds.",
-        ) from exc
+        raise LLMUnavailableError(f"LLM call failed: {exc}. Please retry in a few seconds.") from exc
 
     evidence: Optional[Evidence] = None
     if body.include_evidence:
