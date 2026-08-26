@@ -52,20 +52,27 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(
-    title="Finance Spend Intelligence Assistant",
-    description="RAG-powered Q&A over AstraZeneca procurement policy and invoice data",
-    version="1.0.0",
-    lifespan=lifespan,
-)
+def create_app() -> FastAPI:
+    application = FastAPI(
+        title="Finance Spend Intelligence Assistant",
+        description="RAG-powered Q&A over AstraZeneca procurement policy and invoice data",
+        version="1.0.0",
+        lifespan=lifespan,
+    )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    # Middleware — order matters: CORS must wrap all routes
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-app.include_router(ask.router)
-app.include_router(quality.router)
-app.include_router(invoices.router)
+    application.include_router(ask.router)
+    application.include_router(quality.router)
+    application.include_router(invoices.router)
+
+    return application
+
+
+app = create_app()
