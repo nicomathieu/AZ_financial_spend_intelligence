@@ -3,10 +3,10 @@ Pure cleaning functions — one per DQ issue.
 Each returns (cleaned_value, AuditEntry | None).
 No side effects, no I/O — fully unit-testable in isolation.
 """
+from __future__ import annotations
 import re
 from datetime import date
 from difflib import get_close_matches
-from typing import Optional
 
 from pipeline.models import AuditEntry, VendorRecord
 
@@ -31,7 +31,7 @@ def _audit(
 
 def parse_date(
     raw: str, row_id: int, invoice_number: str
-) -> tuple[date, bool, Optional[AuditEntry]]:
+) -> tuple[date, bool, AuditEntry | None]:
     """
     Returns (parsed_date, is_ambiguous, audit_entry | None).
 
@@ -75,7 +75,7 @@ def parse_date(
 
 def normalize_currency(
     raw: str, row_id: int, invoice_number: str
-) -> tuple[str, Optional[AuditEntry]]:
+) -> tuple[str, AuditEntry | None]:
     normalized = raw.strip().upper()
     if normalized == raw.strip():
         return normalized, None
@@ -85,7 +85,7 @@ def normalize_currency(
 
 def normalize_vendor_id(
     raw: str, row_id: int, invoice_number: str
-) -> tuple[str, Optional[AuditEntry]]:
+) -> tuple[str, AuditEntry | None]:
     # Regex inserts a dash after the leading V — matches V1002→V-1002, V1010→V-1010, etc.
     fixed = re.sub(r"^V(\d)", r"V-\1", raw)
     if fixed == raw:
@@ -96,7 +96,7 @@ def normalize_vendor_id(
 
 def normalize_vendor_name(
     raw: str, row_id: int, invoice_number: str
-) -> tuple[str, Optional[AuditEntry]]:
+) -> tuple[str, AuditEntry | None]:
     """Strip and collapse whitespace only — preserve canonical commercial casing."""
     import re
     normalized = re.sub(r"\s+", " ", raw.strip())
@@ -108,7 +108,7 @@ def normalize_vendor_name(
 
 def parse_amount(
     raw: str, row_id: int, invoice_number: str
-) -> tuple[float, Optional[AuditEntry]]:
+) -> tuple[float, AuditEntry | None]:
     cleaned = raw.strip().strip('"').replace(",", "")
     value = float(cleaned)
     if cleaned == raw.strip():
@@ -122,7 +122,7 @@ def resolve_vendor_id(
     vendors: list[VendorRecord],
     row_id: int,
     invoice_number: str,
-) -> tuple[Optional[str], Optional[AuditEntry]]:
+) -> tuple[str | None, AuditEntry | None]:
     """
     Fuzzy-matches a missing vendor_id from vendor_name against the vendor master.
     Returns (vendor_id, audit_entry) or (None, None) when no match found.

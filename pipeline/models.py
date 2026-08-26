@@ -1,6 +1,6 @@
+from __future__ import annotations
 from datetime import date, datetime, timezone
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -50,11 +50,11 @@ class CleanInvoice(BaseModel):
     amount: float
     currency: str
     cost_center: str
-    po_number: Optional[str]
-    approved_by: Optional[str]
+    po_number: str | None
+    approved_by: str | None
     is_credit_note: bool
     quarantined: bool = False
-    quarantine_reason: Optional[str] = None
+    quarantine_reason: str | None = None
 
 
 class VendorRecord(BaseModel):
@@ -78,7 +78,7 @@ class AuditEntry(BaseModel):
     run_timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
-    run_id: Optional[str] = None
+    run_id: str | None = None
 
 
 class ComplianceFlag(BaseModel):

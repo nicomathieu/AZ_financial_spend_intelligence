@@ -1,6 +1,4 @@
 from __future__ import annotations
-from typing import Optional
-
 import duckdb
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -13,7 +11,7 @@ router = APIRouter()
 class FlaggedInvoice(BaseModel):
     invoice_number: str
     invoice_date: str
-    vendor_name: Optional[str]
+    vendor_name: str | None
     amount: float
     currency: str
     flags: list[str]
@@ -22,10 +20,10 @@ class FlaggedInvoice(BaseModel):
 
 @router.get("/invoices/flagged", response_model=list[FlaggedInvoice])
 def get_flagged_invoices(
-    flag_type: Optional[str] = Query(None, description="Filter by flag type, e.g. NO_PO"),
+    flag_type: str | None = Query(None, description="Filter by flag type, e.g. NO_PO"),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
-    min_amount: Optional[float] = Query(None, ge=0, description="Minimum invoice amount (EUR)"),
+    min_amount: float | None = Query(None, ge=0, description="Minimum invoice amount (EUR)"),
     db: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     where_clauses: list[str] = []

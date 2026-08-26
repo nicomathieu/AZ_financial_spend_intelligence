@@ -1,7 +1,6 @@
 from __future__ import annotations
 import json
 import os
-from typing import Optional
 
 import litellm
 import duckdb
@@ -11,6 +10,7 @@ from pydantic import BaseModel
 from backend.dependencies import get_db, get_rag, RAGEngine
 from backend.exceptions import LLMUnavailableError, ValidationError
 from backend.sql_agent.query_builder import generate_sql
+
 
 router = APIRouter()
 
@@ -63,14 +63,14 @@ class AskRequest(BaseModel):
 class Evidence(BaseModel):
     policy_sections: list[str]
     policy_sources: list[str]
-    sql_query: Optional[str]
-    sql_results: Optional[list[dict]]
+    sql_query: str | None
+    sql_results: list[dict] | None
     source: str  # "policy_only" | "data_only" | "hybrid"
 
 
 class AskResponse(BaseModel):
     answer: str
-    evidence: Optional[Evidence]
+    evidence: Evidence | None
     confidence: str   # "high" | "medium" | "low"
     disclaimer: str
 
@@ -102,9 +102,9 @@ def ask_question(
         needs_policy = True
 
     # ── 3. Generate and execute SQL ──────────────────────────────────────────
-    sql_query: Optional[str] = None
-    sql_results: Optional[list[dict]] = None
-    sql_error: Optional[str] = None
+    sql_query: str | None = None
+    sql_results: list[dict] | None = None
+    sql_error: str | None = None
 
     if needs_data:
         sql_query = generate_sql(question)
@@ -180,7 +180,7 @@ def ask_question(
     except Exception as exc:
         raise LLMUnavailableError(f"LLM call failed: {exc}. Please retry in a few seconds.") from exc
 
-    evidence: Optional[Evidence] = None
+    evidence: Evidence | None = None
     if body.include_evidence:
         evidence = Evidence(
             policy_sections=policy_sections,

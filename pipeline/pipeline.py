@@ -6,11 +6,11 @@ Main ETL pipeline:
   4. Write to DuckDB — idempotent (drop-and-recreate data tables each run)
   5. Append a pipeline_log entry (run history preserved for SOX §8.2)
 """
+from __future__ import annotations
 import json
 import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 import duckdb
 import pandas as pd
@@ -49,14 +49,14 @@ def _clean_row(
     row_id: int,
     vendors: list[VendorRecord],
     known_vendor_ids: set[str],
-) -> tuple[CleanInvoice, list[AuditEntry], Optional[str]]:
+) -> tuple[CleanInvoice, list[AuditEntry], str | None]:
     """
     Returns (clean_invoice, audit_entries, quarantine_reason | None).
     On unrecoverable error, quarantine_reason is set and the row is marked quarantined.
     Data is NEVER dropped — quarantined rows persist in invoices_clean with quarantined=True.
     """
     entries: list[AuditEntry] = []
-    quarantine_reason: Optional[str] = None
+    quarantine_reason: str | None = None
 
     # Date
     try:
@@ -225,7 +225,7 @@ def run_pipeline(
     vendor_master_path: str = "data/vendor_master.csv",
     approver_roles_path: str = "data/approver_roles.json",
     db_path: str = "data/spend_intelligence.duckdb",
-    reference_date: Optional[date] = None,
+    reference_date: date | None = None,
 ) -> PipelineResult:
     """
     End-to-end pipeline: CSV → clean → flag → DuckDB.

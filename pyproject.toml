@@ -1,7 +1,7 @@
 [project]
 name = "az-financial-spend-intelligence"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG-powered finance spend intelligence assistant — FastAPI backend + React frontend"
 requires-python = ">=3.12"
 dependencies = [
     "anthropic>=1.0.0",
@@ -14,7 +14,24 @@ dependencies = [
     "pandas>=3.0.5",
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
+    "scikit-learn>=1.5.0",
     "seaborn>=0.13.2",
     "sentence-transformers>=3.0.0",
     "uvicorn[standard]>=0.32.0",
 ]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.6.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "I"]
+# E/F: pycodestyle + pyflakes; UP: pyupgrade (enforces X|Y unions); I: isort
