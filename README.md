@@ -38,7 +38,7 @@ cd frontend && npm install && npm run dev
 | **DuckDB** | In-process OLAP engine — native CSV ingestion, full SQL, columnar storage. SQLite would be the wrong tool for analytical queries over financial data. Clear migration path to Snowflake/Databricks via Parquet export. |
 | **No LangChain** | Every component is written by hand and fully defensible. LangChain would abstract the embedding strategy, retrieval logic, and prompt construction — exactly the decisions an interviewer will probe. |
 | **Pydantic v2** | Automatic validation, native JSON serialisation, `AuditEntry(frozen=True)` for SOX §8.2 immutability. |
-| **difflib cosine vs vector DB** | The policy document produces ≤15 chunks. NumPy cosine similarity is sufficient and introduces zero external infrastructure. A vector DB (Pinecone, ChromaDB) would be the right call at 10,000+ chunks. |
+| **difflib cosine vs vector DB** | The policy document produces ≤9 chunks. NumPy cosine similarity is sufficient and introduces zero external infrastructure. A vector DB (Pinecone, ChromaDB) would be the right call at 10,000+ chunks. |
 | **uv** | Reproducible lockfile (`uv.lock`), fast installs, Python version pinning — correct default for a prototype that will be handed over. |
 | **Single repo** | Appropriate for a prototype. In production: two repos with independent CI/CD pipelines and versioned API contracts between backend and frontend. |
 | **TF-IDF fallback for embeddings** | `sentence-transformers` may be blocked by corporate SSL inspection proxies at startup (SSL intercept prevents HuggingFace download). The embedder falls back to scikit-learn TF-IDF fitted on the policy corpus — sufficient for 9 chunks. In production: a hosted embedding API (e.g. Azure OpenAI `text-embedding-3-small`) for data residency compliance. |
@@ -133,7 +133,7 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 
 - **Authentication / authorisation** — out of scope per brief; production path is Azure AD SSO with role-based access (analyst / controller / auditor)
 - **CI/CD and deployment** — out of scope per brief; runs locally only. Production gate: pipeline eval metrics (quarantine rate, flag precision/recall) before any merge
-- **Production vector DB** — 15 policy chunks do not warrant Pinecone or ChromaDB; the right trigger is >1,000 chunks or multi-document retrieval
+- **Production vector DB** — 9 policy chunks do not warrant Pinecone or ChromaDB; the right trigger is >1,000 chunks or multi-document retrieval
 - **Full evaluation harness** — a 10-question golden dataset with a scoring script is implemented (`evals/score.py`, 9/10 passing). The production harness described in §4 (faithfulness scoring, retrieval Hit@3, LLM-as-judge) is not implemented
 - **Pixel-perfect styling** — functionality takes precedence over aesthetics for an internal finance tool
 - **dbt lineage** — would add value for the data warehouse transformation layer in production; the Python pipeline handles complex imperative data ingestion (fuzzy matching, multi-step quarantine logic) which dbt's declarative SQL model cannot replace
