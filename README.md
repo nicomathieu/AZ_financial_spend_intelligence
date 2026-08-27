@@ -126,7 +126,6 @@ The prompt guard is the first line — it handles the 99% case cleanly. The code
 - **Fuzzy match threshold 0.7** validated on the happy path only. Production fix: calibrate using a labelled test set + human review queue for matches 0.7–0.9.
 - **Embedder uses TF-IDF fallback** — `sentence-transformers` blocked by AZ Zscaler SSL proxy at startup. Production fix: Azure OpenAI embeddings via the ARI gateway for data residency compliance.
 - **Confidence scoring shows `"high"` for data-only responses** — should be `"medium"`. Known bug, low priority for the prototype.
-- **Markdown not rendered in chat** — raw text displayed. Fix: `react-markdown` in `Chat.jsx`.
 
 ---
 
@@ -290,9 +289,8 @@ The report is derived entirely from `audit_log` and `compliance_flags` in DuckDB
 ├── frontend/
 │   └── src/
 │       ├── App.jsx
-│       ├── components/Chat.jsx
-│       ├── components/QualityDashboard.jsx
-│       └── components/EvidencePanel.jsx
+│       ├── Chat.jsx           # chat UI (EvidencePanel + ConfidenceBadge inline)
+│       └── Dashboard.jsx      # compliance dashboard
 ├── notebook/
 │   └── 01_exploratory_analysis_quality.ipynb
 ├── main.py                        # Entry point: pipeline + report
