@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram id="chMzdPE9nvNiwDFjGKB-" name="Page-1">
-    <mxGraphModel dx="346" dy="183" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1311" dy="694" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -67,7 +67,7 @@
         <mxCell id="n13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="rag/retriever&#xa;TF-IDF" vertex="1">
           <mxGeometry height="45" width="145" x="725" y="283" as="geometry" />
         </mxCell>
-        <mxCell id="n_litellm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="&lt;b&gt;LiteLLM (configurable)&lt;/b&gt;&lt;br&gt;&lt;font size=&quot;1&quot; color=&quot;#7a5c00&quot;&gt;Personnal Anthropic key&lt;/font&gt;" vertex="1">
+        <mxCell id="n_litellm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="&lt;b&gt;LiteLLM (configurable)&lt;/b&gt;&lt;br&gt;&lt;font size=&quot;1&quot; color=&quot;#7a5c00&quot;&gt;Personnal key&lt;/font&gt;" vertex="1">
           <mxGeometry height="55" width="310" x="730" y="438" as="geometry" />
         </mxCell>
         <mxCell id="n_routes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="REST routes: GET /invoices · GET /quality" vertex="1">
