@@ -58,14 +58,21 @@ _DANGEROUS = frozenset(
     }
 )
 
+# Programmatic table blocklist — internal pipeline tables analysts must not query.
+# This is a code-level guard independent of the prompt instruction; it catches
+# prompt-injection or instruction-bypass attempts that slip past the system prompt.
+_BLOCKED_TABLES = frozenset({"PIPELINE_LOG", "AUDIT_LOG", "INVOICES_CLEAN"})
+
 
 def _is_safe_select(sql: str) -> bool:
-    """Two-layer guard: must start with SELECT, must not contain DML keywords."""
+    """Three-layer guard: must start with SELECT, no DML keywords, no internal tables."""
     stripped = sql.strip().upper()
     if not stripped.startswith("SELECT"):
         return False
     tokens = set(stripped.split())
-    return tokens.isdisjoint(_DANGEROUS)
+    if not tokens.isdisjoint(_DANGEROUS):
+        return False
+    return tokens.isdisjoint(_BLOCKED_TABLES)
 
 
 def generate_sql(question: str) -> str | None:

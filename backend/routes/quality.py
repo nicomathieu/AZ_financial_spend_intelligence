@@ -67,7 +67,7 @@ def get_quality_report(db: duckdb.DuckDBPyConnection = Depends(get_db)):
         for flag_type, data in flag_acc.items()
     }
 
-    # Top 10 flagged invoices by EUR amount (all quarantine states for completeness)
+    # Top 10 flagged invoices by nominal amount descending (not EUR-normalised — multi-currency sort)
     top_rows = db.execute("""
         SELECT
             ie.invoice_number,

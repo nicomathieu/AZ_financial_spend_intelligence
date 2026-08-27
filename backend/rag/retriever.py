@@ -12,7 +12,7 @@ def retrieve(
 
     Both embedding arrays must be L2-normalised (embed_texts does this), so
     cosine similarity == dot product — O(n_chunks) with a single matrix multiply.
-    n_chunks ~ 15 for the current policy doc: numpy is more than sufficient.
+    n_chunks ~ 9 for the current policy doc: numpy is more than sufficient.
     """
     similarities: np.ndarray = chunk_embeddings @ query_embedding   # (n_chunks,)
     top_indices = np.argsort(similarities)[::-1][:top_k]

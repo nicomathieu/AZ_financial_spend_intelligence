@@ -56,7 +56,7 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     application = FastAPI(
         title="Finance Spend Intelligence Assistant",
-        description="RAG-powered Q&A over AstraZeneca procurement policy and invoice data",
+        description="RAG-powered Q&A over procurement policy and invoice data",
         version="1.0.0",
         lifespan=lifespan,
     )

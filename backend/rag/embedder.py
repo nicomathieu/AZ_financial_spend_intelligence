@@ -40,7 +40,7 @@ def _tfidf_embed(texts: list[str]) -> np.ndarray:
     This is a drop-in fallback for when the sentence-transformer model
     cannot be downloaded (e.g., air-gapped CI or offline sandbox).
     Quality is lower than neural embeddings but sufficient for the
-    ~15-chunk policy doc this system uses.
+    ~9-chunk policy doc this system uses.
     """
     from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore
     from sklearn.preprocessing import normalize  # type: ignore
@@ -95,7 +95,7 @@ def embed_texts(texts: list[str]) -> np.ndarray:
     Fallback: TF-IDF + cosine normalisation (no network, instant).
 
     Both return L2-normalised vectors so dot-product == cosine similarity.
-    In production AZ would use Azure OpenAI embeddings for data residency.
+    In production a hosted embedding API (e.g. Azure OpenAI text-embedding-3-small) would replace this for data residency compliance.
     """
     global _use_tfidf_fallback
     if not _use_tfidf_fallback:

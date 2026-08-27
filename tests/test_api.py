@@ -56,12 +56,12 @@ def test_db() -> duckdb.DuckDBPyConnection:
     """)
     conn.execute("""
         CREATE TABLE compliance_flags (
-            row_id INT, flag_type VARCHAR, detail VARCHAR,
-            policy_ref VARCHAR, indicative_only BOOL
+            row_id INT, invoice_number VARCHAR, flag_type VARCHAR,
+            detail VARCHAR, indicative_only BOOL
         )
     """)
     conn.execute(
-        "INSERT INTO compliance_flags VALUES (1, 'NO_PO', 'Missing PO above threshold', '§2.1', FALSE)"
+        "INSERT INTO compliance_flags VALUES (1, 'INV-001', 'NO_PO', 'Missing PO above threshold', FALSE)"
     )
     return conn
 

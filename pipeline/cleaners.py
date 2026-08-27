@@ -98,7 +98,6 @@ def normalize_vendor_name(
     raw: str, row_id: int, invoice_number: str
 ) -> tuple[str, AuditEntry | None]:
     """Strip and collapse whitespace only — preserve canonical commercial casing."""
-    import re
     normalized = re.sub(r"\s+", " ", raw.strip())
     if normalized == raw:
         return normalized, None

@@ -14,8 +14,8 @@ from backend.sql_agent.query_builder import generate_sql
 
 router = APIRouter()
 
-SYSTEM_PROMPT = """You are a finance compliance assistant for AstraZeneca's \
-Procurement Controls team. You answer questions about invoice spend using:
+SYSTEM_PROMPT = """You are a finance compliance assistant for a Procurement Controls team. \
+You answer questions about invoice spend using:
 1. Retrieved sections from the Global Procurement & Spend Policy
 2. Live invoice data from the AP system (SQL query results)
 

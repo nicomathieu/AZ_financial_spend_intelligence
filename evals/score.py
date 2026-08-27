@@ -43,6 +43,7 @@ def score_response(item: dict, response: dict) -> dict:
 
     # 3. SQL result count for numeric questions
     # SQL agent returns COUNT(*) as one row {"count_star()": N} — read the value, don't count rows
+    actual_count: Optional[int] = None
     expected_row_count: Optional[int] = item.get("expected_row_count")
     if expected_row_count is not None:
         sql_results: list = evidence.get("sql_results") or []

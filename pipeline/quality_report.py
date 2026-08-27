@@ -218,7 +218,7 @@ def generate_report(
             {"invoice_number": r[0], "reason": r[1]} for r in quarantine_detail
         ],
         "notes": [
-            "⚠️ APPROVAL_LEVEL_VIOLATION (62 flags, highest count) are INDICATIVE ONLY — role mapping uses a mock IAM config. These figures must not be treated as confirmed violations until an authoritative Azure AD integration is in place.",
+            "⚠️ APPROVAL_LEVEL_VIOLATION (62 flags, highest count) are INDICATIVE ONLY — role mapping uses a mock IAM config. These figures must not be treated as confirmed violations until a live IAM integration is in place.",
             f"⚠️ OVERDUE_APPROVAL reference_date={reference_date} is the max invoice_date in the dataset, NOT the actual current date. This report is not an operational snapshot — actual overdue delays are significantly underestimated. Production fix: pass the accounting period close date as the reference parameter.",
             "DATE_AMBIGUOUS (54 rows): format assumed hyphens→MM-DD-YYYY, slashes→DD/MM/YYYY. For a company with primarily European vendors this assumption may be inverted. Production fix: cross-reference with vendor country from vendor_master to resolve ambiguity. Affects OVERDUE_APPROVAL flags for ambiguous rows.",
             "POTENTIAL_DUPLICATE flags represent confirmed duplicate invoice_numbers (identical in every field) — these are likely duplicate payments, not merely candidates for review. See confirmed duplicate pairs table.",
@@ -290,13 +290,13 @@ def _render_markdown(r: dict) -> str:
         "## Compliance Flags",
         "",
         "> ⚠️ **Reliability warning:** `APPROVAL_LEVEL_VIOLATION` (62 flags, highest count) is based on a mock IAM config.",
-        "> These figures must not be treated as confirmed violations until Azure AD integration is in place.",
+        "> These figures must not be treated as confirmed violations until a live IAM integration is in place.",
         "",
         "| Flag | Count | Note |",
         "|------|-------|------|",
     ]
     for k, v in r["compliance_summary"].items():
-        note = "⚠️ indicative only — mock IAM, pending Azure AD integration" if k in r["indicative_only_flags"] else ""
+        note = "⚠️ indicative only — mock IAM, pending live IAM integration" if k in r["indicative_only_flags"] else ""
         lines.append(f"| `{k}` | {v} | {note} |")
 
     # NO_PO currency breakdown

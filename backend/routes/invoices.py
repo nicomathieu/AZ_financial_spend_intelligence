@@ -23,7 +23,7 @@ def get_flagged_invoices(
     flag_type: str | None = Query(None, description="Filter by flag type, e.g. NO_PO"),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
-    min_amount: float | None = Query(None, ge=0, description="Minimum invoice amount (EUR)"),
+    min_amount: float | None = Query(None, ge=0, description="Minimum invoice amount in native currency (not EUR-normalised)"),
     db: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     where_clauses: list[str] = []
